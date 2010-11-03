@@ -72,7 +72,8 @@ public class Server {
 	
 	public void knowServer(Server otherServer){
 		otherServers.add(otherServer);
-		System.out.println("(" + this.getIP() + ") Server: " + this.getMAC() + " now knows server: " + otherServer.getMAC() + " at IP: " + otherServer.getIP());
+		System.out.println("(" + this.getIP() + ") Server: " + this.getMAC() + " now knows server: " 
+				+ otherServer.getMAC() + " at IP: " + otherServer.getIP());
 		this.updateShoutHeard(otherServer.getIP());
 	}
 	
@@ -135,12 +136,14 @@ public class Server {
 
 			if(currentTimeInMillis > (shoutsHeard.get(mac) + deathPeriod)){
 				System.out.println("!!!======= DEAD SERVER DETECTED =========!!!");
-				System.out.println("!!! (" + this.getIP() + ") Server: " + mac + " at " + ip + " is dead. Removing from known servers!");
+				System.out.println("!!! (" + this.getIP() + ") Server: " + mac + " at " 
+						+ ip + " is dead. Removing from known servers!");
 				System.out.println("!!!======================================!!!");
 				otherServers.remove(loopCount);
 				break serverListLoop;
 			}else{
-				System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " + ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
+				System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " 
+						+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
 			}
 			
 			loopCount++;
