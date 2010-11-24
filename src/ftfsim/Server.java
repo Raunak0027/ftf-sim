@@ -130,7 +130,12 @@ public class Server {
 		otherServers.remove(otherServer);
 	}
 	
-	public void sendData(String destination, String packet){
+	public void sendData(Packet packet){
+		
+	}
+	
+	public void receiveData(Packet packet){
+		
 		
 	}
 	
