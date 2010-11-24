@@ -2,10 +2,18 @@ package ftfsim;
 
 public class Client {
 	
-	String IPAddress;
+	String ClientId;
 	
-	Client(String ip){
-		IPAddress = new String(ip);
+	Client(String id){
+		ClientId = new String(id);
+	}
+	
+	public void sendPacket(Packet packet) {
+			
+	}
+	
+	public void receivePacket(Packet packet) {
+		
 	}
 	
 	
