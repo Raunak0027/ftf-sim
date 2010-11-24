@@ -25,9 +25,25 @@ public class Router {
 	}
 	
 	public void packetIn(Packet packet){
-		String MAC = IPTable.get("192.168.1.1");
-		Server dest = nodeTable.get(MAC);
-		dest.receivePacket(packet);
+		try {
+			if (IPTable.size()==1) {
+				String MAC = IPTable.get("192.168.1.1");
+				Server dest = nodeTable.get(MAC);
+				dest.receivePacket(packet);
+			} else if (IPTable.size()>=2) {
+				String MAC1 = IPTable.get("192.168.1.1");
+				Server dest1 = nodeTable.get(MAC1);
+				dest1.receivePacket(packet);
+				String MAC2 = IPTable.get("192.168.1.2");
+				Server dest2 = nodeTable.get(MAC2);
+				dest2.receivePacket(packet);
+			} else {
+				
+			}
+		} catch (Exception e) {
+			
+		}
+			
 	}
 	
 	public void packetOut(Packet packet){
