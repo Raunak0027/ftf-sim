@@ -43,6 +43,11 @@ public class Router {
 		this.writeToConsole(msg);
 	}
 	
+	public void addClient(Client client){
+		clientTable.put(client.ClientId, client);
+		this.writeToConsole("Client Added to Router" + client.ClientId);
+	}
+	
 	public void removeNode(Server server){
 		nodeTable.remove(server.getMAC());
 		String msg = "Machine removed from network: " + server.getMAC();
