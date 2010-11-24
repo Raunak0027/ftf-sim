@@ -61,7 +61,7 @@ public class Router {
 	
 	public void addClient(Client client){
 		clientTable.put(client.ClientId, client);
-		this.writeToConsole("Client Added to Router" + client.ClientId);
+		this.writeToConsole("Client " + client.ClientId + " Added to Router");
 	}
 	
 	public void removeNode(Server server){

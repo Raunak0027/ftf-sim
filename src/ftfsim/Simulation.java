@@ -26,8 +26,8 @@ import javax.swing.JTextField;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
-import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.BorderLayout;
 
 public class Simulation extends JFrame {
 	
@@ -48,6 +48,7 @@ public class Simulation extends JFrame {
 	
 	// Declare exposed visual elements
 	static JInternalFrame[] serverFrames = new JInternalFrame[10];
+	static ClientGUIFrame[] clientFrames = new ClientGUIFrame[20];
 	private JTextField macAddressField;
 	private JTextField ipAddressField;
 	private JButton btnCreateServer;
@@ -67,7 +68,6 @@ public class Simulation extends JFrame {
 	private String[] macExamples = new String[5];
 	int macExampleCount;
 	private DefaultTableModel ipTableModel;
-	private JTextField clientIdTxt;
 	
 	
 	
@@ -115,12 +115,12 @@ public class Simulation extends JFrame {
 			e1.printStackTrace();
 		}
         simSettingsFrame.setToolTipText("Adjust variables in the simulation environment");
-        simSettingsFrame.setBounds(6, 6, 358, 364);
+        simSettingsFrame.setBounds(16, 6, 358, 448);
         mainPanel.add(simSettingsFrame);
         simSettingsFrame.getContentPane().setLayout(null);
         
         JTabbedPane settingsTabs = new JTabbedPane(JTabbedPane.TOP);
-        settingsTabs.setBounds(0, 0, 334, 318);
+        settingsTabs.setBounds(0, 0, 334, 159);
         simSettingsFrame.getContentPane().add(settingsTabs);
         
         JPanel speedPanel = new JPanel();
@@ -168,136 +168,87 @@ public class Simulation extends JFrame {
         txtpnDeathPeriodms.setBounds(6, 59, 102, 44);
         speedPanel.add(txtpnDeathPeriodms);
         
-        JTextPane txtpnNote = new JTextPane();
-        txtpnNote.setBounds(6, 115, 301, 128);
-        speedPanel.add(txtpnNote);
-        txtpnNote.setEnabled(false);
-        txtpnNote.setEditable(false);
-        txtpnNote.setBackground(UIManager.getColor("Button.background"));
-        txtpnNote.setText("Note: This settings panel needs more work to have the 'Death declared' slider synchronised but also constrained by the simulation rate. Notice, right now you can create false death detections by having these settings set inappropriately. In fact, they're pretty useless at the moment. I wouldn't bother using them yet. Leave in default position");
-        sldrDeath.addChangeListener(new ChangeListener() {
-        	public void stateChanged(ChangeEvent arg0) {
-        		deathPeriod = getSldrDeath().getValue() * 100;
-        	}
-        });
-        deathPeriod = sldrDeath.getValue() * 100;
+        JTabbedPane serverPane = new JTabbedPane(JTabbedPane.TOP);
+        serverPane.setBounds(0, 157, 334, 146);
+        simSettingsFrame.getContentPane().add(serverPane);
         
-        simRate = sldrSimRate.getValue();
-        
-        JInternalFrame consoleFrame = new JInternalFrame("Console");
-        
-        try {
-			consoleFrame.setSelected(true);
-		} catch (PropertyVetoException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        consoleFrame.setBounds(377, 6, 431, 327);
-        mainPanel.add(consoleFrame);
-        consoleFrame.getContentPane().setLayout(null);
-        
-        JScrollPane consoleScroll = new JScrollPane();
-        consoleScroll.setBounds(6, 6, 395, 223);
-        consoleFrame.getContentPane().add(consoleScroll);
-        
-        
-        
-        
-        
-        
-        consoleTextArea = new JTextArea();
-        consoleTextArea.setText("Welcome to FTF-Sim - Fast Transparent Failover...\n");
-        consoleTextArea.setEditable(false);
-        consoleScroll.setViewportView(consoleTextArea);
-        consoleTextArea.setFont(new Font("Courier New", Font.PLAIN, 13));
-        
-        chckbxAutoscroll = new JCheckBox("AutoScroll");
-        chckbxAutoscroll.setSelected(true);
-        chckbxAutoscroll.setBounds(6, 241, 128, 23);
-        consoleFrame.getContentPane().add(chckbxAutoscroll);
-        
-        JInternalFrame routerStatsFrame = new JInternalFrame("Router Stats");
-        routerStatsFrame.setBounds(502, 330, 393, 314);
-        mainPanel.add(routerStatsFrame);
-        routerStatsFrame.getContentPane().setLayout(null);
-        
-        JScrollPane ipTablePane = new JScrollPane();
-        ipTablePane.setBounds(6, 34, 357, 95);
-        routerStatsFrame.getContentPane().add(ipTablePane);
-        
-        
-        ipJTable = new JTable();
-        ipTablePane.setViewportView(ipJTable);
-        ipJTable.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-        ipJTable.setColumnSelectionAllowed(true);
-        ipJTable.setCellSelectionEnabled(true);
-        ipJTable.setModel(ipTableModel);
-        
-        JLabel lblIpAllocation = new JLabel("IP Allocation:");
-        lblIpAllocation.setBounds(6, 6, 83, 16);
-        routerStatsFrame.getContentPane().add(lblIpAllocation);
-        
-        JScrollPane routerConsoleScroll = new JScrollPane();
-        routerConsoleScroll.setBounds(6, 166, 357, 96);
-        routerStatsFrame.getContentPane().add(routerConsoleScroll);
-        
-        routerConsole = new JTextArea();
-        routerConsole.setFont(new Font("Courier New", Font.PLAIN, 13));
-        routerConsoleScroll.setViewportView(routerConsole);
-        
-        JLabel lblRouterConsole = new JLabel("Router Console:");
-        lblRouterConsole.setBounds(6, 141, 100, 16);
-        routerStatsFrame.getContentPane().add(lblRouterConsole);
-        
-        JLabel label = new JLabel("", image, JLabel.CENTER);
-        label.setBounds(0, 546, 400, 144);
-        mainPanel.add(label);
-        
-        JInternalFrame serversFrame = new JInternalFrame("Servers");
-        serversFrame.setBounds(841, 78, 319, 210);
-        mainPanel.add(serversFrame);
-        serversFrame.getContentPane().setLayout(null);
-        
-        JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-        tabbedPane.setBounds(6, 6, 283, 146);
-        serversFrame.getContentPane().add(tabbedPane);
-        
-        JPanel panel = new JPanel();
-        tabbedPane.addTab("Create Server", null, panel, null);
-        panel.setLayout(null);
+        JPanel createServerPanel = new JPanel();
+        serverPane.addTab("Create Server", null, createServerPanel, null);
+        createServerPanel.setLayout(null);
         
         JLabel lblMacAddress = new JLabel("MAC Address:");
         lblMacAddress.setBounds(6, 12, 97, 16);
-        panel.add(lblMacAddress);
+        createServerPanel.add(lblMacAddress);
         
         macAddressField = new JTextField();
         macAddressField.setBounds(103, 6, 153, 28);
-        panel.add(macAddressField);
+        createServerPanel.add(macAddressField);
         macAddressField.setText("00-0B-22-B3-01-FF");
         macAddressField.setColumns(10);
         
         ipAddressField = new JTextField();
         ipAddressField.setBounds(103, 34, 153, 28);
-        panel.add(ipAddressField);
+        createServerPanel.add(ipAddressField);
         ipAddressField.setText("192.168.1.1");
         ipAddressField.setColumns(10);
         
         JLabel lblIpAddress = new JLabel("IP Address:");
         lblIpAddress.setBounds(6, 40, 97, 16);
-        panel.add(lblIpAddress);
+        createServerPanel.add(lblIpAddress);
         
         
         
         
         btnCreateServer = new JButton("Create Server");
-
-        btnCreateServer.setBounds(139, 65, 117, 29);
-        panel.add(btnCreateServer);
-        btnCreateServer.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent arg0) {
-        		
-        		if(btnCreateServer.isEnabled()){
+        
+                btnCreateServer.setBounds(139, 65, 117, 29);
+                createServerPanel.add(btnCreateServer);
+                
+                JPanel killServerPanel = new JPanel();
+                serverPane.addTab("Kill Server", null, killServerPanel, null);
+                killServerPanel.setLayout(null);
+                
+                JButton btnKill = new JButton("Kill");
+                btnKill.setBounds(150, 7, 51, 29);
+                killServerPanel.add(btnKill);
+                
+                serverIndexTxt = new JTextField();
+                serverIndexTxt.setBounds(89, 6, 61, 28);
+                killServerPanel.add(serverIndexTxt);
+                serverIndexTxt.setColumns(10);
+                
+                JLabel lblKillByIndex = new JLabel("Kill by Index");
+                lblKillByIndex.setBounds(6, 12, 78, 16);
+                killServerPanel.add(lblKillByIndex);
+                btnKill.addMouseListener(new MouseAdapter() {
+                	@Override
+                	public void mouseClicked(MouseEvent arg0) {
+                		servers[new Integer(getServerIndexTxt().getText())].killServer();
+                	}
+                });
+                
+                JTabbedPane clientsPane = new JTabbedPane(JTabbedPane.TOP);
+                clientsPane.setBounds(0, 305, 334, 97);
+                simSettingsFrame.getContentPane().add(clientsPane);
+                
+                JPanel createClientPanel = new JPanel();
+                clientsPane.addTab("Clients", null, createClientPanel, null);
+                createClientPanel.setLayout(null);
+                
+                JButton btnCreateClient = new JButton("Create Client");
+                btnCreateClient.setBounds(6, 6, 125, 29);
+                createClientPanel.add(btnCreateClient);
+                btnCreateClient.addMouseListener(new MouseAdapter() {
+                	@Override
+                	public void mouseClicked(MouseEvent arg0) {
+                		createClient();        		
+                	}
+                });
+                btnCreateServer.addMouseListener(new MouseAdapter() {
+                	@Override
+                	public void mouseClicked(MouseEvent arg0) {
+                		
+                		if(btnCreateServer.isEnabled()){
 	        		createServer(sim, router, macAddressField.getText(), ipAddressField.getText());
 	        		
 	        		ipAddressField.setText("192.168.1." + (instantiatedServerCount + 1));
@@ -315,52 +266,105 @@ public class Simulation extends JFrame {
 	        			macAddressField.setEnabled(false);
 	        			
 	        		}
-        		}
+                		}
+                	}
+                });
+        sldrDeath.addChangeListener(new ChangeListener() {
+        	public void stateChanged(ChangeEvent arg0) {
+        		deathPeriod = getSldrDeath().getValue() * 100;
         	}
         });
+        deathPeriod = sldrDeath.getValue() * 100;
         
-        JInternalFrame internalFrame = new JInternalFrame("Kill");
-        internalFrame.setBounds(929, 565, 231, 79);
-        mainPanel.add(internalFrame);
-        internalFrame.getContentPane().setLayout(null);
+        simRate = sldrSimRate.getValue();
         
-        JButton btnKill = new JButton("Kill");
-        btnKill.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent arg0) {
-        		servers[new Integer(getServerIndexTxt().getText())].killServer();
-        	}
-        });
-        btnKill.setBounds(150, 2, 51, 29);
-        internalFrame.getContentPane().add(btnKill);
+        JInternalFrame consoleFrame = new JInternalFrame("Console");
         
-        serverIndexTxt = new JTextField();
-        serverIndexTxt.setBounds(89, 1, 61, 28);
-        internalFrame.getContentPane().add(serverIndexTxt);
-        serverIndexTxt.setColumns(10);
+        try {
+			consoleFrame.setSelected(true);
+		} catch (PropertyVetoException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        consoleFrame.setBounds(377, 6, 431, 404);
+        mainPanel.add(consoleFrame);
+        consoleFrame.getContentPane().setLayout(null);
         
-        JLabel lblKillByIndex = new JLabel("Kill by Index");
-        lblKillByIndex.setBounds(6, 7, 78, 16);
-        internalFrame.getContentPane().add(lblKillByIndex);
+        JScrollPane consoleScroll = new JScrollPane();
+        consoleScroll.setBounds(6, 34, 395, 167);
+        consoleFrame.getContentPane().add(consoleScroll);
         
         
         
         
         
         
-        JInternalFrame deathFrame = new JInternalFrame("Deaths");
-        deathFrame.setResizable(true);
-        deathFrame.setBounds(16, 382, 448, 158);
-        mainPanel.add(deathFrame);
+        consoleTextArea = new JTextArea();
+        consoleTextArea.setText("Welcome to FTF-Sim - Fast Transparent Failover...\n");
+        consoleTextArea.setEditable(false);
+        consoleScroll.setViewportView(consoleTextArea);
+        consoleTextArea.setFont(new Font("Courier New", Font.PLAIN, 13));
+        
+        chckbxAutoscroll = new JCheckBox("AutoScroll");
+        chckbxAutoscroll.setSelected(true);
+        chckbxAutoscroll.setBounds(304, 2, 97, 23);
+        consoleFrame.getContentPane().add(chckbxAutoscroll);
+        
+        JLabel lblGlobal = new JLabel("Global");
+        lblGlobal.setBounds(6, 9, 45, 16);
+        consoleFrame.getContentPane().add(lblGlobal);
         
         JScrollPane scrollPane = new JScrollPane();
-        deathFrame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+        scrollPane.setBounds(6, 241, 395, 112);
+        consoleFrame.getContentPane().add(scrollPane);
         
         deathConsole = new JTextArea();
+        scrollPane.setViewportView(deathConsole);
         deathConsole.setFont(new Font("Courier New", Font.BOLD, 13));
         deathConsole.setForeground(Color.RED);
         deathConsole.setBackground(Color.BLACK);
-        scrollPane.setViewportView(deathConsole);
+        
+        JLabel lblDeathDetections = new JLabel("Death Detections");
+        lblDeathDetections.setToolTipText("");
+        lblDeathDetections.setBounds(6, 213, 109, 16);
+        consoleFrame.getContentPane().add(lblDeathDetections);
+        
+        JInternalFrame routerStatsFrame = new JInternalFrame("Router Stats");
+        routerStatsFrame.setBounds(815, 47, 316, 314);
+        mainPanel.add(routerStatsFrame);
+        routerStatsFrame.getContentPane().setLayout(null);
+        
+        JScrollPane ipTablePane = new JScrollPane();
+        ipTablePane.setBounds(6, 34, 280, 95);
+        routerStatsFrame.getContentPane().add(ipTablePane);
+        
+        
+        ipJTable = new JTable();
+        ipTablePane.setViewportView(ipJTable);
+        ipJTable.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
+        ipJTable.setColumnSelectionAllowed(true);
+        ipJTable.setCellSelectionEnabled(true);
+        ipJTable.setModel(ipTableModel);
+        
+        JLabel lblIpAllocation = new JLabel("IP Allocation:");
+        lblIpAllocation.setBounds(6, 6, 83, 16);
+        routerStatsFrame.getContentPane().add(lblIpAllocation);
+        
+        JScrollPane routerConsoleScroll = new JScrollPane();
+        routerConsoleScroll.setBounds(6, 166, 280, 96);
+        routerStatsFrame.getContentPane().add(routerConsoleScroll);
+        
+        routerConsole = new JTextArea();
+        routerConsole.setFont(new Font("Courier New", Font.PLAIN, 13));
+        routerConsoleScroll.setViewportView(routerConsole);
+        
+        JLabel lblRouterConsole = new JLabel("Router Console:");
+        lblRouterConsole.setBounds(6, 141, 100, 16);
+        routerStatsFrame.getContentPane().add(lblRouterConsole);
+        
+        JLabel label = new JLabel("", image, JLabel.CENTER);
+        label.setBounds(0, 546, 400, 144);
+        mainPanel.add(label);
         
         JButton btnNewSimulation = new JButton("New Simulation");
         btnNewSimulation.addMouseListener(new MouseAdapter() {
@@ -391,39 +395,9 @@ public class Simulation extends JFrame {
         btnNewSimulation.setBounds(1036, 6, 124, 29);
         mainPanel.add(btnNewSimulation);
         
-        JInternalFrame internalFrame_1 = new JInternalFrame("Create Client");
-        internalFrame_1.setBounds(929, 330, 231, 223);
-        mainPanel.add(internalFrame_1);
-        internalFrame_1.getContentPane().setLayout(null);
         
-        JLabel lblClientid = new JLabel("ClientId");
-        lblClientid.setBounds(6, 6, 54, 16);
-        internalFrame_1.getContentPane().add(lblClientid);
-        
-        clientIdTxt = new JTextField();
-        clientIdTxt.setBounds(67, 0, 134, 28);
-        internalFrame_1.getContentPane().add(clientIdTxt);
-        clientIdTxt.setColumns(10);
-        
-        JButton btnCreateClient = new JButton("Create Client");
-        btnCreateClient.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseClicked(MouseEvent arg0) {
-        		clients[instantiatedClientCount] = new Client(getClientIdTxt().getText(), router , sim);
-        		clients[instantiatedClientCount].testMethod();
-        		instantiatedClientCount++;
-        		
-        	}
-        });
-        btnCreateClient.setBounds(77, 32, 117, 29);
-        internalFrame_1.getContentPane().add(btnCreateClient);
-        internalFrame_1.setVisible(true);
-        deathFrame.setVisible(true);
-        
-        internalFrame.setVisible(true);
         
 
-        serversFrame.setVisible(true);
         
         
         ipJTable.getColumnModel().getColumn(0).setPreferredWidth(104);
@@ -487,7 +461,18 @@ public class Simulation extends JFrame {
 		
 	}
 	
+	public void createClient(){
+		clients[instantiatedClientCount] = new Client(new String("" + instantiatedClientCount), router , sim);
+		clientFrames[instantiatedClientCount] = new ClientGUIFrame(instantiatedClientCount, mainPanel);
+		
+		clients[instantiatedClientCount].testMethod();
+		
+		instantiatedClientCount++;
+	}
 	
+	public void writeToClientConsole(int clientId, String msg){
+		clientFrames[clientId].writeToConsole(msg);
+	}
 	
 	
 	
@@ -535,8 +520,5 @@ public class Simulation extends JFrame {
 	}
 	public JTextField getServerIndexTxt() {
 		return serverIndexTxt;
-	}
-	public JTextField getClientIdTxt() {
-		return clientIdTxt;
 	}
 }
