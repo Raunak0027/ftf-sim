@@ -32,6 +32,7 @@ public class Router {
 	
 	public void packetOut(Packet packet){
 		String clientId = packet.getDest();
+		System.out.println(clientId);
 		Client client = clientTable.get(clientId);
 		client.receivePacket(packet);
 	}

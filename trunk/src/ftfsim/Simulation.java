@@ -40,7 +40,8 @@ public class Simulation extends JFrame {
 	private static Router router;
 	private static Server[] servers;
 	private static int instantiatedServerCount;
-	//private Client[] clients = new Client[10];
+	private static int instantiatedClientCount;
+	private Client[] clients = new Client[10];
 	public int simRate;
 	public int deathPeriod;
 	
@@ -66,6 +67,7 @@ public class Simulation extends JFrame {
 	private String[] macExamples = new String[5];
 	int macExampleCount;
 	private DefaultTableModel ipTableModel;
+	private JTextField clientIdTxt;
 	
 	
 	
@@ -77,6 +79,7 @@ public class Simulation extends JFrame {
 		
 		macExampleCount = 0;
 		instantiatedServerCount = 0;
+		instantiatedClientCount = 0;
 		ipTableModel = new DefaultTableModel();
 		
 		ipTableModel.addColumn("MAC Address");
@@ -88,8 +91,6 @@ public class Simulation extends JFrame {
 	    macExamples[2] = "1F-14-F6-21-AA-CA";
 	    macExamples[3] = "";
 	    macExamples[4] = "";
-		
-		setResizable(false);
 
         setSize(1166, 716);
         setTitle("Simulation");
@@ -389,6 +390,34 @@ public class Simulation extends JFrame {
         });
         btnNewSimulation.setBounds(1036, 6, 124, 29);
         mainPanel.add(btnNewSimulation);
+        
+        JInternalFrame internalFrame_1 = new JInternalFrame("Create Client");
+        internalFrame_1.setBounds(929, 330, 231, 223);
+        mainPanel.add(internalFrame_1);
+        internalFrame_1.getContentPane().setLayout(null);
+        
+        JLabel lblClientid = new JLabel("ClientId");
+        lblClientid.setBounds(6, 6, 54, 16);
+        internalFrame_1.getContentPane().add(lblClientid);
+        
+        clientIdTxt = new JTextField();
+        clientIdTxt.setBounds(67, 0, 134, 28);
+        internalFrame_1.getContentPane().add(clientIdTxt);
+        clientIdTxt.setColumns(10);
+        
+        JButton btnCreateClient = new JButton("Create Client");
+        btnCreateClient.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent arg0) {
+        		clients[instantiatedClientCount] = new Client(getClientIdTxt().getText(), router , sim);
+        		clients[instantiatedClientCount].testMethod();
+        		instantiatedClientCount++;
+        		
+        	}
+        });
+        btnCreateClient.setBounds(77, 32, 117, 29);
+        internalFrame_1.getContentPane().add(btnCreateClient);
+        internalFrame_1.setVisible(true);
         deathFrame.setVisible(true);
         
         internalFrame.setVisible(true);
@@ -506,5 +535,8 @@ public class Simulation extends JFrame {
 	}
 	public JTextField getServerIndexTxt() {
 		return serverIndexTxt;
+	}
+	public JTextField getClientIdTxt() {
+		return clientIdTxt;
 	}
 }
