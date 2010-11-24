@@ -6,6 +6,9 @@ public class Client {
 	Router router;
 	Simulation sim;
 	Packet[] packetArray;
+	int packetCounter = 1;
+	Packet[] receivedArray;
+	String receivedMessage = "";
 	
 	Client(String id,Router router, Simulation sim){
 		ClientId = new String(id);
@@ -27,11 +30,23 @@ public class Client {
 			// server ACK
 			// check if nemore packets
 			// if any then send otherwise do nothing
+			
+			if(packetCounter < packetArray.length)
+			{
+				// send the next packet
+				sendPacket(packetArray[packetCounter++]);
+			}
+			
+			else
+			{
+				// do nothing - wait for output
+			}
 		}
 		
 		else
 		{
 			// arrange packets in a list
+			assemblePacket(packet);
 		}
 	}
 	
@@ -45,7 +60,7 @@ public class Client {
 		this.sendPacket(packet3);
 	}
 	
-	public void createPackets(String msgToSend)
+	private void createPackets(String msgToSend)
 	{
 		// create packets based on the string and store
 		int index = (msgToSend.length()/3)+1;
@@ -79,6 +94,41 @@ public class Client {
 			}
 			
 			counter++;
+		}
+	}
+	
+	public void  startSending(String msgToSend)
+	{
+		createPackets(msgToSend);
+		sendPacket(packetArray[0]);
+	}
+	
+	private void assemblePacket(Packet receivedPacket)
+	{
+		receivedArray = new Packet[receivedPacket.getTotal()];
+		receivedArray[receivedPacket.getPosition()] = receivedPacket;
+		
+		int checkCounter = 0;
+		boolean noPacketsLeft = true;
+		
+		while(checkCounter < receivedArray.length)
+		{
+			if(receivedArray[checkCounter] == null)
+			{
+				noPacketsLeft = false;
+			}				
+		}
+		
+		if(noPacketsLeft)
+		{
+			checkCounter = 0;
+			
+			while(checkCounter < receivedArray.length)
+			{
+				receivedMessage = receivedMessage + receivedArray[checkCounter++].getPayload();
+			}
+			
+			System.out.println("Message received: " + receivedMessage);
 		}
 	}
 }
