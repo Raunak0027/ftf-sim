@@ -8,6 +8,7 @@ public class Client {
 	Client(String id,Router router, Simulation sim){
 		ClientId = new String(id);
 		this.router = router;
+		router.addClient(this);
 		this.sim = sim;
 	}
 	
