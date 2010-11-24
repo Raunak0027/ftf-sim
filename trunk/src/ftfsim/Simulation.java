@@ -27,7 +27,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.awt.Color;
-import java.awt.BorderLayout;
+
 
 public class Simulation extends JFrame {
 	

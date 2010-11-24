@@ -1,20 +1,20 @@
 package ftfsim;
 
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.JTextField;
 
 public class ClientGUIFrame extends JInternalFrame {
 	
 	private static final long serialVersionUID = 7152343225641563835L;
 	private JTextArea consoleArea;
 	private Client attachedClient;
+	private JTextField msgToSendTxt;
 
 
 
@@ -36,14 +36,14 @@ public class ClientGUIFrame extends JInternalFrame {
         consoleArea = new JTextArea();
         consoleScroll.setViewportView(consoleArea);
         
-        JButton btnSendTest = new JButton("Send Test");
+        JButton btnSendTest = new JButton("Send Msg");
         btnSendTest.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent arg0) {
         		
         		Runnable doTest = new Runnable() {
         			public void run(){
-        				attachedClient.testMethod();
+        				attachedClient.startSending(getMsgToSendTxt().getText());
         			}
         		};
         		
@@ -52,8 +52,13 @@ public class ClientGUIFrame extends JInternalFrame {
         		
         	}
         });
-        btnSendTest.setBounds(10, 87, 117, 29);
+        btnSendTest.setBounds(238, 87, 117, 29);
         getContentPane().add(btnSendTest);
+        
+        msgToSendTxt = new JTextField();
+        msgToSendTxt.setBounds(10, 87, 216, 28);
+        getContentPane().add(msgToSendTxt);
+        msgToSendTxt.setColumns(10);
         this.setVisible(true);
 		
 
@@ -67,5 +72,8 @@ public class ClientGUIFrame extends JInternalFrame {
 		System.out.println("Got to writeToConsole method...");
 		getClientConsole().append(msg + "\n");
 		System.out.println("Appended msg...");
+	}
+	public JTextField getMsgToSendTxt() {
+		return msgToSendTxt;
 	}
 }
