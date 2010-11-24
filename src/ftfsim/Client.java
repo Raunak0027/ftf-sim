@@ -3,17 +3,20 @@ package ftfsim;
 public class Client {
 	
 	String ClientId;
+	Router router;
 	
-	Client(String id){
+	Client(String id,Router router){
 		ClientId = new String(id);
+		this.router = router;
 	}
 	
 	public void sendPacket(Packet packet) {
-			
+		router.packetIn(packet);
 	}
 	
 	public void receivePacket(Packet packet) {
-		
+		System.out.println("Got it");
+		// Say if it's Ack or smth
 	}
 	
 	public void testMethod(){
