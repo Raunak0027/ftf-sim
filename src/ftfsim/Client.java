@@ -25,17 +25,28 @@ public class Client {
 		//System.out.println("Got it");
 		// Say if it's Ack or smth
 		
+		System.out.println("Client: Reveived Packet");
+		
 		if(packet.getPayload().contentEquals("ACK"))
 		{
 			// server ACK
 			// check if nemore packets
 			// if any then send otherwise do nothing
-			
+			System.out.println("Client: Got ACK");
+			try{
 			sim.writeToClientConsole(new Integer(ClientId),"Client received ACK");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			
 			if(packetCounter < packetArray.length)
 			{
 				// send the next packet
+				try{
+					Thread.sleep(500);
+				}catch(Exception e){
+					
+				}
 				sendPacket(packetArray[packetCounter++]);
 			}
 			
@@ -46,7 +57,7 @@ public class Client {
 		}else
 		{
 			// arrange packets in a list
-			System.out.println("Here????");
+			System.out.println("Client: Got message packet.");
 			assemblePacket(packet);
 		}
 	}
@@ -104,12 +115,15 @@ public class Client {
 	{
 		createPackets(msgToSend);
 		sendPacket(packetArray[0]);
+		packetCounter = 1;
 	}
 	
 	private void assemblePacket(Packet receivedPacket)
 	{
 		System.out.println("Entered assemblePacket()");
-		receivedArray = new Packet[receivedPacket.getTotal()];
+		if(receivedArray==null){
+			receivedArray = new Packet[receivedPacket.getTotal()];
+		}
 		receivedArray[receivedPacket.getPosition()] = receivedPacket;
 		
 		int checkCounter = 0;
@@ -118,11 +132,11 @@ public class Client {
 		
 		while(checkCounter < receivedArray.length)
 		{
-			System.out.println("Checking for more packets...");
+			System.out.println("Checking for null packets at index: " + checkCounter);
 			if(receivedArray[checkCounter] == null)
 			{
 				noPacketsLeft = false;
-				System.out.println("Still packets left?");
+				System.out.println("Packet: " + checkCounter + " is null");
 			}
 			checkCounter++;
 		}
@@ -137,6 +151,9 @@ public class Client {
 			}
 			
 			sim.writeToClientConsole(new Integer(ClientId), "Message received: " + receivedMessage);
+			receivedArray = null;
+			receivedMessage = "";
+			packetCounter = 1;
 		}
 	}
 }

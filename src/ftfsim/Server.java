@@ -160,12 +160,16 @@ public class Server {
 				
 				// Send result
 				System.out.println("Sending result to client...");
-				Packet result = new Packet("SERVER", packet.getSource(), "YAY", 0, 1);
-				sendPacket(result);
-				result = new Packet("SERVER", packet.getSource(), "OHH", 0, 1);
-				sendPacket(result);
-				result = new Packet("SERVER", packet.getSource(), "YES", 0, 1);
-				sendPacket(result);
+				
+				String msg = "This is a reply. PLEASE WORK!!!!!";
+				Packet[] replyPackets = createPackets(msg, packet.getSource());
+				
+				int packetSendCount = 0;
+				while(packetSendCount < replyPackets.length){
+					sendPacket(replyPackets[packetSendCount]);
+					packetSendCount++;
+				}
+				
 			}else{
 				// Send ACK
 				System.out.println("Current total message: " + receivedMsgs.get(packet.getSource()));
@@ -180,6 +184,53 @@ public class Server {
 		}
 		
 		
+	}
+	
+	
+	private Packet[] createPackets(String msgToSend, String dest)
+	{
+		// create packets based on the string and store
+		double lengthOfMsg = (double) msgToSend.length();
+		double numberOfPackets = (lengthOfMsg/3);
+		numberOfPackets = Math.ceil(numberOfPackets);
+		
+		System.out.println(numberOfPackets);
+		
+		int index = (int) numberOfPackets;
+		
+		System.out.println(index);
+		Packet[] packetArray = new Packet[index];
+		int counter = 0;
+		
+		while(msgToSend.length() != 0)
+		{
+			if(msgToSend.length() >= 3)
+			{
+				// extract three and remove from string
+				Packet packet = new Packet("SERVER", dest, msgToSend.substring(0, 3),counter, index);
+				msgToSend = msgToSend.substring(3, msgToSend.length());
+				packetArray[counter] = packet;
+			}
+			
+			else if(msgToSend.length() == 2)
+			{
+				// extract 2 and remove
+				Packet packet = new Packet("SERVER", dest, msgToSend.substring(0, 2),counter, index);
+				msgToSend = "";
+				packetArray[counter] = packet;
+			}
+			
+			else
+			{
+				//extract one and remove
+				Packet packet = new Packet("SERVER", dest, msgToSend.substring(0, 1),counter, index);
+				msgToSend = "";
+				packetArray[counter] = packet;
+			}
+			
+			counter++;
+		}
+		return packetArray;
 	}
 	
 	public void shoutOut(){
