@@ -6,11 +6,13 @@ public class Router {
 	
 	private Hashtable<String, String> IPTable;
 	private Hashtable<String, Server> nodeTable;
+	private Hashtable<String, Client> clientTable;
 	private Simulation sim;
 	
 	Router(Simulation sim){
 		IPTable = new Hashtable<String, String>();
 		nodeTable = new Hashtable<String, Server>();
+		clientTable = new Hashtable<String, Client>();
 		this.sim = sim;
 		writeToConsole("Router initiated with IPTable and NodeTable");
 	}
@@ -22,11 +24,13 @@ public class Router {
 		
 	}
 	
-	public void packetIn(String source, String destination, String packet){
-		
+	public void packetIn(Packet packet){
+		String MAC = IPTable.get("192.168.1.1");
+		Server dest = nodeTable.get(MAC);
+		dest.receivePacket(packet);
 	}
 	
-	public void packetOut(String source, String destination, String packet){
+	public void packetOut(Packet packet){
 		
 	}
 	
