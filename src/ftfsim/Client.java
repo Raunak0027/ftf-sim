@@ -4,10 +4,11 @@ public class Client {
 	
 	String ClientId;
 	Router router;
-	
-	Client(String id,Router router){
+	Simulation sim;
+	Client(String id,Router router, Simulation sim){
 		ClientId = new String(id);
 		this.router = router;
+		this.sim = sim;
 	}
 	
 	public void sendPacket(Packet packet) {
