@@ -31,7 +31,7 @@ public class Client {
 			// check if nemore packets
 			// if any then send otherwise do nothing
 			
-			System.out.println("Client received ACK");
+			sim.writeToClientConsole(new Integer(ClientId),"Client received ACK");
 			
 			if(packetCounter < packetArray.length)
 			{
@@ -124,7 +124,7 @@ public class Client {
 				receivedMessage = receivedMessage + receivedArray[checkCounter++].getPayload();
 			}
 			
-			System.out.println("Message received: " + receivedMessage);
+			sim.writeToClientConsole(new Integer(ClientId), "Message received: " + receivedMessage);
 		}
 	}
 }
