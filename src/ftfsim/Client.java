@@ -22,7 +22,7 @@ public class Client {
 	}
 	
 	public void receivePacket(Packet packet) {
-		System.out.println("Got it");
+		//System.out.println("Got it");
 		// Say if it's Ack or smth
 		
 		if(packet.getPayload().contentEquals("ACK"))
@@ -30,6 +30,8 @@ public class Client {
 			// server ACK
 			// check if nemore packets
 			// if any then send otherwise do nothing
+			
+			System.out.println("Client received ACK");
 			
 			if(packetCounter < packetArray.length)
 			{
@@ -51,13 +53,7 @@ public class Client {
 	}
 	
 	public void testMethod(){
-		Packet packet1 = new Packet(ClientId, "SOME DESTINATION", "Packet number 1 contents", 1, 3);
-		Packet packet2 = new Packet(ClientId, "SOME DESTINATION", "Packet number 2 contents", 2, 3);
-		Packet packet3 = new Packet(ClientId, "SOME DESTINATION", "Packet number 3 contents", 3, 3);
-		
-		this.sendPacket(packet1);
-		this.sendPacket(packet2);
-		this.sendPacket(packet3);
+		startSending("This is a message");
 	}
 	
 	private void createPackets(String msgToSend)

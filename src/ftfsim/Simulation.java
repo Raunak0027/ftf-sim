@@ -41,7 +41,7 @@ public class Simulation extends JFrame {
 	private static Server[] servers;
 	private static int instantiatedServerCount;
 	private static int instantiatedClientCount;
-	private Client[] clients = new Client[10];
+	private Client[] clients = new Client[100];
 	public int simRate;
 	public int deathPeriod;
 	

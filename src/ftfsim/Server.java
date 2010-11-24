@@ -137,10 +137,11 @@ public class Server {
 	public void receivePacket(Packet packet){
 		
 		if(alive){
-			System.out.println("Server Received Packet from Client");
+			System.out.println("Server Sending ACK back to client");
 			
-			Packet packet1 = new Packet("SOME SOURCE", packet.getSource(), "Reply Packet", 1, 1);
-			sendPacket(packet1);
+			Packet packetReply = new Packet("SERVER", packet.getSource(), "ACK", 1, 1);
+			
+			sendPacket(packetReply);
 		}
 		
 		
