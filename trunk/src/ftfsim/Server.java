@@ -161,7 +161,7 @@ public class Server {
 				// Send result
 				System.out.println("Sending result to client...");
 				
-				String msg = "This is a reply. PLEASE WORK!!!!!";
+				String msg = reverseString(finalMsg);
 				Packet[] replyPackets = createPackets(msg, packet.getSource());
 				
 				int packetSendCount = 0;
@@ -387,6 +387,13 @@ public class Server {
 		doShoutsThread.start();
 		removeDeadServersThread.start();
 		
+	}
+	
+	
+	
+	public String reverseString(String msg){
+		String reverse = new StringBuffer(msg).reverse().toString();
+		return reverse;
 	}
 	
 	
