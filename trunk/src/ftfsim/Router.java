@@ -31,7 +31,9 @@ public class Router {
 	}
 	
 	public void packetOut(Packet packet){
-		
+		String clientId = packet.getDest();
+		Client client = clientTable.get(clientId);
+		client.receivePacket(packet);
 	}
 	
 	public void addNode(Server server){
