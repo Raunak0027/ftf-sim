@@ -43,23 +43,30 @@ public class Client {
 			{
 				// do nothing - wait for output
 			}
-		}
-		
-		else
+		}else
 		{
 			// arrange packets in a list
+			System.out.println("Here????");
 			assemblePacket(packet);
 		}
 	}
 	
 	public void testMethod(){
-		startSending("This is a message");
+		startSending("This is a message. A much longer message... VERY LONG MESSAGE. Blah blah blah....");
 	}
 	
 	private void createPackets(String msgToSend)
 	{
 		// create packets based on the string and store
-		int index = (msgToSend.length()/3)+1;
+		double lengthOfMsg = (double) msgToSend.length();
+		double numberOfPackets = (lengthOfMsg/3);
+		numberOfPackets = Math.ceil(numberOfPackets);
+		
+		System.out.println(numberOfPackets);
+		
+		int index = (int) numberOfPackets;
+		
+		System.out.println(index);
 		packetArray = new Packet[index];
 		int counter = 0;
 		
@@ -101,18 +108,23 @@ public class Client {
 	
 	private void assemblePacket(Packet receivedPacket)
 	{
+		System.out.println("Entered assemblePacket()");
 		receivedArray = new Packet[receivedPacket.getTotal()];
 		receivedArray[receivedPacket.getPosition()] = receivedPacket;
 		
 		int checkCounter = 0;
 		boolean noPacketsLeft = true;
 		
+		
 		while(checkCounter < receivedArray.length)
 		{
+			System.out.println("Checking for more packets...");
 			if(receivedArray[checkCounter] == null)
 			{
 				noPacketsLeft = false;
-			}				
+				System.out.println("Still packets left?");
+			}
+			checkCounter++;
 		}
 		
 		if(noPacketsLeft)

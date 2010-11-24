@@ -16,6 +16,7 @@ public class Server {
 	private ArrayList<Server> otherServers;
 	private Hashtable<String, Long> shoutsHeard;
 	private Simulation sim;
+	private Hashtable<String, String> receivedMsgs;
 	
 	
 	// deathPeriod is the period of time in milliseconds,
@@ -58,6 +59,7 @@ public class Server {
 		connectedRouter = router;
 		otherServers = new ArrayList<Server>();
 		shoutsHeard = new Hashtable<String, Long>();
+		receivedMsgs = new Hashtable<String, String>();
 		
 		
 		router.addNode(this);
@@ -134,14 +136,47 @@ public class Server {
 		connectedRouter.packetOut(packet);
 	}
 	
+	
+	
 	public void receivePacket(Packet packet){
 		
 		if(alive){
-			System.out.println("Server Sending ACK back to client");
 			
-			Packet packetReply = new Packet("SERVER", packet.getSource(), "ACK", 1, 1);
+			System.out.println("Received packet.");
 			
-			sendPacket(packetReply);
+			if(receivedMsgs.get(packet.getSource())==null){
+				receivedMsgs.put(packet.getSource(), packet.getPayload());
+			}else{
+				receivedMsgs.put(packet.getSource(), receivedMsgs.get(packet.getSource()) + packet.getPayload());
+			}
+			
+			
+			
+			if(packet.getPosition()+1==packet.getTotal()){
+				System.out.println("Got Final Packet!");
+				String finalMsg = receivedMsgs.get(packet.getSource());
+				receivedMsgs.remove(packet.getSource());
+				System.out.println("Final Message: " + finalMsg);
+				
+				// Send result
+				System.out.println("Sending result to client...");
+				Packet result = new Packet("SERVER", packet.getSource(), "YAY", 0, 1);
+				sendPacket(result);
+				result = new Packet("SERVER", packet.getSource(), "OHH", 0, 1);
+				sendPacket(result);
+				result = new Packet("SERVER", packet.getSource(), "YES", 0, 1);
+				sendPacket(result);
+			}else{
+				// Send ACK
+				System.out.println("Current total message: " + receivedMsgs.get(packet.getSource()));
+				System.out.println("Server Sending ACK back to client");
+				Packet packetReply = new Packet("SERVER", packet.getSource(), "ACK", 0, 1);
+				sendPacket(packetReply);
+			}
+			
+			
+			
+
 		}
 		
 		
