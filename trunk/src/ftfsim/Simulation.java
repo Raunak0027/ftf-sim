@@ -463,14 +463,15 @@ public class Simulation extends JFrame {
 	
 	public void createClient(){
 		clients[instantiatedClientCount] = new Client(new String("" + instantiatedClientCount), router , sim);
-		clientFrames[instantiatedClientCount] = new ClientGUIFrame(instantiatedClientCount, mainPanel);
+		clientFrames[instantiatedClientCount] = new ClientGUIFrame(clients[instantiatedClientCount], mainPanel);
 		
-		clients[instantiatedClientCount].testMethod();
+		
 		
 		instantiatedClientCount++;
 	}
 	
 	public void writeToClientConsole(int clientId, String msg){
+		System.out.println("Trying to write: " + msg + " to client: " + clientId + " console.");
 		clientFrames[clientId].writeToConsole(msg);
 	}
 	
