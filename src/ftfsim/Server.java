@@ -138,6 +138,9 @@ public class Server {
 		
 		System.out.println("Server Received Packet from Client");
 		
+		Packet packet1 = new Packet("SOME SOURCE", packet.getSource(), "Reply Packet", 1, 1);
+		sendPacket(packet1);
+		
 	}
 	
 	public void shoutOut(){
