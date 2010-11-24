@@ -131,11 +131,12 @@ public class Server {
 	}
 	
 	public void sendPacket(Packet packet){
-		
+		connectedRouter.packetOut(packet);
 	}
 	
 	public void receivePacket(Packet packet){
 		
+		System.out.println("Server Received Packet from Client");
 		
 	}
 	
