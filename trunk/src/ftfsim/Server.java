@@ -136,10 +136,13 @@ public class Server {
 	
 	public void receivePacket(Packet packet){
 		
-		System.out.println("Server Received Packet from Client");
+		if(alive){
+			System.out.println("Server Received Packet from Client");
+			
+			Packet packet1 = new Packet("SOME SOURCE", packet.getSource(), "Reply Packet", 1, 1);
+			sendPacket(packet1);
+		}
 		
-		Packet packet1 = new Packet("SOME SOURCE", packet.getSource(), "Reply Packet", 1, 1);
-		sendPacket(packet1);
 		
 	}
 	
