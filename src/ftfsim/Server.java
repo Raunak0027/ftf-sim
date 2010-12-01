@@ -243,13 +243,16 @@ public class Server {
 	private boolean isPrimary(Packet packet) {
 		int lastDigitServer = Integer.parseInt(this.getIP().substring(this.getIP().length() -1));
 		int lastDigitClient = Integer.parseInt(packet.getSource());
-		
-		if (((lastDigitServer%2==0) && (lastDigitClient%2==0)) ||
-			((lastDigitServer%2==0) && (lastDigitClient%2==0)))	{
+		if (duplex==false) { 
 			return true;
 		} else {
-			return false;
-		}
+			if (((lastDigitServer%2==0) && (lastDigitClient%2==0)) ||
+				((lastDigitServer%2==0) && (lastDigitClient%2==0)))	{
+				return true;
+			} else {
+				return false;
+			}
+		}	
 	}
 	
 	public void shoutOut(){
