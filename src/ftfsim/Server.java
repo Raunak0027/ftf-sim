@@ -417,8 +417,4 @@ public class Server {
 		String reverse = new StringBuffer(msg).reverse().toString();
 		return reverse;
 	}
-	
-	
-	
-	
 }
