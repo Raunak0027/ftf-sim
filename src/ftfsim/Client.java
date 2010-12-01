@@ -53,11 +53,14 @@ public class Client {
 			else
 			{
 				// do nothing - wait for output
+				//can add a timer to show waiting time
 			}
 		}else
 		{
 			// arrange packets in a list
 			System.out.println("Client: Got message packet.");
+			sendPacket(new Packet(ClientId,"SOME DESTIONATION","ACK",0,1));
+			System.out.println("Client: Send ACK for received result packet.");
 			assemblePacket(packet);
 		}
 	}
