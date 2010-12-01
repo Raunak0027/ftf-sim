@@ -17,6 +17,7 @@ public class Server {
 	private Hashtable<String, Long> shoutsHeard;
 	private Simulation sim;
 	private Hashtable<String, String> receivedMsgs;
+	private static boolean duplex=true;
 	
 	
 	// deathPeriod is the period of time in milliseconds,
@@ -36,7 +37,13 @@ public class Server {
 	// will be working on the server lists at the same time.
 	private long shoutDelay = 50;
 	private long detectDeadDelay = 60;
+	public static boolean getMode() {
+		return duplex;
+	}
 	
+	public static void setMode(boolean mode) {
+		duplex = mode;
+	}
 	
 	public long getDeathPeriod(){
 		return sim.getDeathPeriod();
@@ -143,7 +150,7 @@ public class Server {
 		if(alive){
 			
 			System.out.println("Received packet.");
-			
+			//if (packet.getPayload().equals("ACK")) 
 			if(receivedMsgs.get(packet.getSource())==null){
 				receivedMsgs.put(packet.getSource(), packet.getPayload());
 			}else{
@@ -151,7 +158,7 @@ public class Server {
 			}
 			
 			
-			
+			//modify
 			if(packet.getPosition()+1==packet.getTotal()){
 				System.out.println("Got Final Packet!");
 				String finalMsg = receivedMsgs.get(packet.getSource());
