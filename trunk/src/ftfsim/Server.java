@@ -247,7 +247,7 @@ public class Server {
 			return true;
 		} else {
 			if (((lastDigitServer%2==0) && (lastDigitClient%2==0)) ||
-				((lastDigitServer%2==0) && (lastDigitClient%2==0)))	{
+				((lastDigitServer%2==1) && (lastDigitClient%2==1)))	{
 				return true;
 			} else {
 				return false;
