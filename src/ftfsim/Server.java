@@ -244,23 +244,30 @@ public class Server {
 			packetSendCount = clientAckCount.get(source)+ 1;
 		}
 		sendPacket(replyPackets[packetSendCount]);
-		talkToServer(source, packetSendCount);
+		if (packetSendCount == replyPackets.length - 1) {
+			primaryMsgs.remove(packet.getSource());
+			clientAckCount.remove(packet.getSource());
+		}
+		talkToServer(packet, packetSendCount);
 	}
 	
 	// Tells the other server from the duo that a response has been fully sent
 	//need to add String parameter to handle deletion when msg is done
-	private void talkToServer(String source, int lastSentPacket) {
+	private void talkToServer(Packet packet, int lastSentPacket) {
+		String source = packet.getSource();
+		boolean last = (lastSentPacket + 1== packet.getTotal());
+		
 		if (duplex == true) {
 			if (this.getIP().equals("192.168.1.1")) { 
 				for (int i=0;i<=otherServers.size(); i++) {
 					if (otherServers.get(i).getIP().equals("192.168.1.2")) {
-						otherServers.get(i).receiveFromServer(source,lastSentPacket);
+						otherServers.get(i).receiveFromServer(source,lastSentPacket,last);
 					}
 				}
 			} else 	if (this.getIP().equals("192.168.1.2")) { 
 				for (int i=0;i<=otherServers.size(); i++) {
 					if (otherServers.get(i).getIP().equals("192.168.1.1")) {
-						otherServers.get(i).receiveFromServer(source, lastSentPacket);
+						otherServers.get(i).receiveFromServer(source, lastSentPacket,last);
 					}
 				}
 			}	
@@ -270,8 +277,13 @@ public class Server {
 	}
 	
 	//TODO
-	private void receiveFromServer(String source, int lastSentPacket) {
-		if (backupMsgs.get(source)!=null) {
+	private void receiveFromServer(String source, int lastSentPacket, boolean last) {
+		if (last) {
+			backupFullMsgs.remove(source);
+			serverReplyCount.remove(source);
+			clientAckCount.remove(source);
+		}
+		if (backupFullMsgs.get(source)!=null) {
 			serverReplyCount.put(source, lastSentPacket);
 			System.out.println("CHECK");
 		}
@@ -402,7 +414,15 @@ public class Server {
 				
 				writeToDeathConsole(msg);
 				
+				if (otherServers.get(loopCount).getIP().equals("192.168.1.1")||
+					otherServers.get(loopCount).getIP().equals("192.168.1.2")){
+					duplex = false;
+				} 
+				//Remove from router
+				connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
+				connectedRouter.removeNode(otherServers.get(loopCount));
 				otherServers.remove(loopCount);
+				
 				break serverListLoop;
 			}else{
 				//System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " 
