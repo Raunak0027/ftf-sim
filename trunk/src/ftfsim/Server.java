@@ -21,6 +21,7 @@ public class Server {
 	private Hashtable<String, Integer> clientAckCount;
 	private Hashtable<String, Integer> serverReplyCount;
 	private Hashtable<String, String> primaryMsgs;
+	private Hashtable<String, String> backupFullMsgs;
 	private static boolean duplex=true;
 	
 	
@@ -75,6 +76,7 @@ public class Server {
 		backupMsgs = new Hashtable<String, String>();
 		primaryMsgs = new Hashtable<String, String>();
 		serverReplyCount = new Hashtable<String, Integer>();
+		backupFullMsgs = new Hashtable<String, String>();
 		router.addNode(this);
 		
 	}
@@ -181,13 +183,24 @@ public class Server {
 	}
 	
 	private void saveBackup(Packet packet) {
-		if ((backupMsgs.get(packet.getSource())==null)&&(packet.getPosition()==0)) {
-			backupMsgs.put(packet.getSource(),packet.getPayload());
-		} else if (backupMsgs.get(packet.getSource())!=null){
-			backupMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource())+ packet.getPayload());
-		} else {
+		//if it is a remainder of a failure
+		if (primaryMsgs.get(packet.getSource())!=null) {
+			savePrimary(packet);
+		} else {			
+			if ((backupMsgs.get(packet.getSource())==null)&&(packet.getPosition()==0)) {
+				backupMsgs.put(packet.getSource(),packet.getPayload());
+			} else if (backupMsgs.get(packet.getSource())!=null){
+				backupMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource())+ packet.getPayload());
+			} else {
+				
+			}
 			
-		}
+			if ((backupMsgs.get(packet.getSource())!=null) && (packet.getPosition()+1==packet.getTotal())) {
+				backupFullMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource()));
+				backupMsgs.remove(packet.getSource());
+			}
+			
+		}	
 	}
 	
 	private void savePrimary(Packet packet) {
