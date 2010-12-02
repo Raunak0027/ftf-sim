@@ -69,9 +69,10 @@ public class ClientGUIFrame extends JInternalFrame {
 	}
 	
 	public void writeToConsole(String msg){
-		System.out.println("Got to writeToConsole method...");
+		
 		getClientConsole().append(msg + "\n");
-		System.out.println("Appended msg...");
+		getClientConsole().setCaretPosition(getClientConsole().getDocument().getLength());
+		
 	}
 	public JTextField getMsgToSendTxt() {
 		return msgToSendTxt;
