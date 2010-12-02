@@ -59,9 +59,14 @@ public class Client {
 		{
 			// arrange packets in a list
 			System.out.println("Client: Got message packet.");
-			sendPacket(new Packet(ClientId,"SOME DESTIONATION","ACK",0,1));
-			System.out.println("Client: Send ACK for received result packet.");
-			sim.writeToClientConsole(new Integer(ClientId), "Received Payload: \"" + packet.getPayload() +  "\" Sending ACK...");
+			
+			if(packet.getPosition()+1 != packet.getTotal())
+			{
+				sendPacket(new Packet(ClientId,"SOME DESTIONATION","ACK",0,1));
+				System.out.println("Client: Send ACK for received result packet.");
+				sim.writeToClientConsole(new Integer(ClientId), "Received Payload: \"" + packet.getPayload() +  "\" Sending ACK...");
+			}
+				
 			try{
 				Thread.sleep(500);
 			}catch(Exception e){
