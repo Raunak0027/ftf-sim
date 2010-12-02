@@ -471,8 +471,9 @@ public class Simulation extends JFrame {
 	}
 	
 	public void writeToClientConsole(int clientId, String msg){
-		System.out.println("Trying to write: " + msg + " to client: " + clientId + " console.");
+		// System.out.println("Trying to write: " + msg + " to client: " + clientId + " console.");
 		clientFrames[clientId].writeToConsole(msg);
+		
 	}
 	
 	
