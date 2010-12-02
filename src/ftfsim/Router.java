@@ -95,7 +95,7 @@ public class Router {
             Object key = keys.nextElement();
             //System.out.println(" Key :" + key + " Value: " + IPTable.get(key));
             
-            sim.getIpTableModel().addRow(new Object[]{key, IPTable.get(key)});
+            sim.getIpTableModel().addRow(new Object[]{IPTable.get(key), key});
         }
 		
 		this.writeToConsole(msg);
