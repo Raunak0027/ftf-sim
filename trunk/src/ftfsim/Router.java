@@ -104,5 +104,9 @@ public class Router {
 	public String getMAC(String ip){
 		return IPTable.get(ip);
 	}
+	
+	public Hashtable getIPTable() {
+		return IPTable;
+	}
 
 }
