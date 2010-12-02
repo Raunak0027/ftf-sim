@@ -1,5 +1,6 @@
 package ftfsim;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class Router {
@@ -81,6 +82,22 @@ public class Router {
 	public void deallocateIP(String ip){
 		IPTable.remove(ip);
 		String msg = "IP: " + ip + " deallocated";
+		
+		int numberOfRows = sim.getIpTableModel().getRowCount();
+		int count = 0;
+		
+		while(count<numberOfRows){
+			sim.getIpTableModel().removeRow(count);
+		}
+		
+		Enumeration<String> keys = IPTable.keys();
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            //System.out.println(" Key :" + key + " Value: " + IPTable.get(key));
+            
+            sim.getIpTableModel().addRow(new Object[]{key, IPTable.get(key)});
+        }
+		
 		this.writeToConsole(msg);
 	}
 	
