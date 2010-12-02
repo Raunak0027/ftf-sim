@@ -27,7 +27,7 @@ public class Client {
 		
 		System.out.println("Client: Reveived Packet");
 		
-		if(packet.getPayload().contentEquals("ACK"))
+		if((packet.getPayload().contentEquals("ACK")) && (packet.getTotal() == 1))
 		{
 			// server ACK
 			// check if nemore packets
