@@ -16,7 +16,11 @@ public class Server {
 	private ArrayList<Server> otherServers;
 	private Hashtable<String, Long> shoutsHeard;
 	private Simulation sim;
-	private Hashtable<String, String> receivedMsgs;
+	//private Hashtable<String, String> receivedMsgs;
+	private Hashtable<String, String> backupMsgs;
+	private Hashtable<String, Integer> clientAckCount;
+	private Hashtable<String, Integer> serverReplyCount;
+	private Hashtable<String, String> primaryMsgs;
 	private static boolean duplex=true;
 	
 	
@@ -66,9 +70,11 @@ public class Server {
 		connectedRouter = router;
 		otherServers = new ArrayList<Server>();
 		shoutsHeard = new Hashtable<String, Long>();
-		receivedMsgs = new Hashtable<String, String>();
-		
-		
+		//receivedMsgs = new Hashtable<String, String>();
+		clientAckCount = new Hashtable<String, Integer>();
+		backupMsgs = new Hashtable<String, String>();
+		primaryMsgs = new Hashtable<String, String>();
+		serverReplyCount = new Hashtable<String, Integer>();
 		router.addNode(this);
 		
 	}
@@ -147,50 +153,115 @@ public class Server {
 	
 	public void receivePacket(Packet packet){
 		
-		if(alive){
-			
+		if(alive){			
 			System.out.println("Received packet.");
-			//if (packet.getPayload().equals("ACK")) 
-			if(receivedMsgs.get(packet.getSource())==null){
-				receivedMsgs.put(packet.getSource(), packet.getPayload());
-			}else{
-				receivedMsgs.put(packet.getSource(), receivedMsgs.get(packet.getSource()) + packet.getPayload());
+			//record the ACK in hashtable
+			if ((packet.getPayload().equals("ACK")) && (packet.getTotal()==1)) {
+				saveAck(packet);
+			} else if (isPrimary(packet)){
+				savePrimary(packet);
+			} else {
+				saveBackup(packet);
 			}
-			
-			
-			//modify
-			if(packet.getPosition()+1==packet.getTotal()){
-				System.out.println("Got Final Packet!");
-				String finalMsg = receivedMsgs.get(packet.getSource());
-				receivedMsgs.remove(packet.getSource());
-				System.out.println("Final Message: " + finalMsg);
-				
-				// Send result
-				System.out.println("Sending result to client...");
-				
-				String msg = reverseString(finalMsg);
-				Packet[] replyPackets = createPackets(msg, packet.getSource());
-				
-				int packetSendCount = 0;
-				while(packetSendCount < replyPackets.length){
-					sendPacket(replyPackets[packetSendCount]);
-					packetSendCount++;
-				}
-				
-			}else{
-				// Send ACK
-				System.out.println("Current total message: " + receivedMsgs.get(packet.getSource()));
-				System.out.println("Server Sending ACK back to client");
-				Packet packetReply = new Packet("SERVER", packet.getSource(), "ACK", 0, 1);
-				sendPacket(packetReply);
-			}
-			
-			
-			
-
 		}
 		
 		
+	}
+	
+	private void saveAck(Packet packet) {
+		if (clientAckCount.get(packet.getSource())==null) {
+			clientAckCount.put(packet.getSource(), 0);
+		} else {
+			clientAckCount.put(packet.getSource(),clientAckCount.get(packet.getSource()) + 1);
+		}
+		
+		if (primaryMsgs.get(packet.getSource())!=null) {
+			sendOutput(packet);
+		}
+	}
+	
+	private void saveBackup(Packet packet) {
+		if ((backupMsgs.get(packet.getSource())==null)&&(packet.getPosition()==0)) {
+			backupMsgs.put(packet.getSource(),packet.getPayload());
+		} else if (backupMsgs.get(packet.getSource())!=null){
+			backupMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource())+ packet.getPayload());
+		} else {
+			
+		}
+	}
+	
+	private void savePrimary(Packet packet) {
+		if ((primaryMsgs.get(packet.getSource())==null)&&(packet.getPosition()==0)) {
+			primaryMsgs.put(packet.getSource(),packet.getPayload());
+		} else if (primaryMsgs.get(packet.getSource())!=null){
+			primaryMsgs.put(packet.getSource(),primaryMsgs.get(packet.getSource())+ packet.getPayload());
+		} else {
+		}		
+		
+		//modify
+		if(packet.getPosition()+1==packet.getTotal()){
+			sendOutput(packet);
+		}else{
+			// Send ACK
+			System.out.println("Current total message: " + primaryMsgs.get(packet.getSource()));
+			System.out.println("Server Sending ACK back to client");
+			Packet packetReply = new Packet("SERVER", packet.getSource(), "ACK", 0, 1);
+			sendPacket(packetReply);
+		}
+	}
+	
+	private void sendOutput(Packet packet) {
+		System.out.println("Got Final Packet!");
+		String source = packet.getSource();
+		String finalMsg = primaryMsgs.get(source);
+		//receivedMsgs.remove(packet.getSource());
+		System.out.println("Final Message: " + finalMsg);
+		
+		// Send result
+		System.out.println("Sending result to client...");
+		
+		//needs restructuring
+		String msg = reverseString(finalMsg);
+		Packet[] replyPackets = createPackets(msg, source);
+		
+		int packetSendCount = 0;
+		System.out.println(packetSendCount);
+
+		if (clientAckCount.get(source)!=null) {
+			packetSendCount = clientAckCount.get(source)+ 1;
+		}
+		sendPacket(replyPackets[packetSendCount]);
+		talkToServer(source, packetSendCount);
+	}
+	
+	// Tells the other server from the duo that a response has been fully sent
+	//need to add String parameter to handle deletion when msg is done
+	private void talkToServer(String source, int lastSentPacket) {
+		if (duplex == true) {
+			if (this.getIP().equals("192.168.1.1")) { 
+				for (int i=0;i<=otherServers.size(); i++) {
+					if (otherServers.get(i).getIP().equals("192.168.1.2")) {
+						otherServers.get(i).receiveFromServer(source,lastSentPacket);
+					}
+				}
+			} else 	if (this.getIP().equals("192.168.1.2")) { 
+				for (int i=0;i<=otherServers.size(); i++) {
+					if (otherServers.get(i).getIP().equals("192.168.1.1")) {
+						otherServers.get(i).receiveFromServer(source, lastSentPacket);
+					}
+				}
+			}	
+		} else {
+			
+		}
+	}
+	
+	//TODO
+	private void receiveFromServer(String source, int lastSentPacket) {
+		if (backupMsgs.get(source)!=null) {
+			serverReplyCount.put(source, lastSentPacket);
+			System.out.println("CHECK");
+		}
 	}
 	
 	
