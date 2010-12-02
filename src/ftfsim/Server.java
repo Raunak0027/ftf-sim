@@ -22,7 +22,7 @@ public class Server {
 	private Hashtable<String, Integer> serverReplyCount;
 	private Hashtable<String, String> primaryMsgs;
 	private Hashtable<String, String> backupFullMsgs;
-	private static boolean duplex=true;
+	private static boolean duplex=false;
 	
 	
 	// deathPeriod is the period of time in milliseconds,
@@ -178,7 +178,7 @@ public class Server {
 		}
 		
 		if (primaryMsgs.get(packet.getSource())!=null) {
-			sendOutput(packet);
+			sendOutput(packet.getSource());
 		}
 	}
 	
@@ -196,6 +196,7 @@ public class Server {
 			}
 			
 			if ((backupMsgs.get(packet.getSource())!=null) && (packet.getPosition()+1==packet.getTotal())) {
+				System.out.println("MOVED TO BACKUPFULL");
 				backupFullMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource()));
 				backupMsgs.remove(packet.getSource());
 			}
@@ -213,7 +214,7 @@ public class Server {
 		
 		//modify
 		if(packet.getPosition()+1==packet.getTotal()){
-			sendOutput(packet);
+			sendOutput(packet.getSource());
 		}else{
 			// Send ACK
 			System.out.println("Current total message: " + primaryMsgs.get(packet.getSource()));
@@ -223,10 +224,11 @@ public class Server {
 		}
 	}
 	
-	private void sendOutput(Packet packet) {
+	private void sendOutput(String source) {
 		System.out.println("Got Final Packet!");
-		String source = packet.getSource();
+		//String source = packet.getSource();
 		String finalMsg = primaryMsgs.get(source);
+		boolean last = false;
 		//receivedMsgs.remove(packet.getSource());
 		System.out.println("Final Message: " + finalMsg);
 		
@@ -245,17 +247,17 @@ public class Server {
 		}
 		sendPacket(replyPackets[packetSendCount]);
 		if (packetSendCount == replyPackets.length - 1) {
-			primaryMsgs.remove(packet.getSource());
-			clientAckCount.remove(packet.getSource());
+			primaryMsgs.remove(source);
+			clientAckCount.remove(source);
+			last = true;
 		}
-		talkToServer(packet, packetSendCount);
+		talkToServer(source, packetSendCount,last);
 	}
 	
 	// Tells the other server from the duo that a response has been fully sent
 	//need to add String parameter to handle deletion when msg is done
-	private void talkToServer(Packet packet, int lastSentPacket) {
-		String source = packet.getSource();
-		boolean last = (lastSentPacket + 1== packet.getTotal());
+	private void talkToServer(String source, int lastSentPacket, boolean last) {
+		//String source = packet.getSource();
 		
 		if (duplex == true) {
 			if (this.getIP().equals("192.168.1.1")) { 
@@ -282,6 +284,7 @@ public class Server {
 			backupFullMsgs.remove(source);
 			serverReplyCount.remove(source);
 			clientAckCount.remove(source);
+			System.out.println("REMOVED ");
 		}
 		if (backupFullMsgs.get(source)!=null) {
 			serverReplyCount.put(source, lastSentPacket);
@@ -395,6 +398,7 @@ public class Server {
 		this.alive = false;
 	}
 	
+	// ALSO SWITCHES MODES. MINOR BUG WITH SWITCH TO SIMPLEX
 	private void removeDeads(){
 		
 		int totalOtherServers = this.otherServers.size();
@@ -413,22 +417,35 @@ public class Server {
 				String msg = "!!! (" + this.getIP() + ") Server: " + mac + " at " + ip + " is dead. Removing from known servers!";
 				
 				writeToDeathConsole(msg);
-				
 				if (otherServers.get(loopCount).getIP().equals("192.168.1.1")||
 					otherServers.get(loopCount).getIP().equals("192.168.1.2")){
 					duplex = false;
-				} 
+					System.out.println("SWITCHED TO SIMPLEx");
+					System.out.println(this.getIP());
+					System.out.println(loopCount);
+					System.out.println(totalOtherServers);
+				} 	
 				//Remove from router
 				connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
 				connectedRouter.removeNode(otherServers.get(loopCount));
 				otherServers.remove(loopCount);
-				
+
 				break serverListLoop;
 			}else{
+				//MODE SWITCHING
+				if (otherServers.isEmpty()) {
+					duplex = false;
+				} else {
+					if ((connectedRouter.getIPTable().get("192.168.1.1")!= null) &&
+							(connectedRouter.getIPTable().get("192.168.1.2")!=null)) {
+						duplex = true;
+						System.out.println("DUPLEX MODE");
+					}
+				}
 				//System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " 
-				//		+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
+				loopCount++;
+//		+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
 			}
-			
 			loopCount++;
 		}
 		
