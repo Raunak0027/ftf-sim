@@ -1,6 +1,7 @@
 package ftfsim;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Calendar;
 import java.util.Hashtable;
 
@@ -424,6 +425,7 @@ public class Server {
 					System.out.println(this.getIP());
 					System.out.println(loopCount);
 					System.out.println(totalOtherServers);
+					switchToSimplex();
 				} 	
 				//Remove from router
 				connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
@@ -452,9 +454,32 @@ public class Server {
 	}
 	
 	
-	
-	
-	
+	private void switchToSimplex() {
+		System.out.println(backupMsgs.size());
+		/*
+		Enumeration<String> backupKeys = backupMsgs.elements();
+		while (backupKeys.hasMoreElements()) {
+			System.out.println("IN SIMPLEX");
+			String source = backupKeys.nextElement();
+			// Send ACK
+			System.out.println("Current total message: " + primaryMsgs.get(source));
+			System.out.println("Server Sending ACK back to client");
+			Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
+			sendPacket(packetReply);
+		}
+		
+		Enumeration<String> fullMsgKeys = backupFullMsgs.elements();
+		while (fullMsgKeys.hasMoreElements()) {
+			String source = fullMsgKeys.nextElement();
+			if (clientAckCount.get(source)==serverReplyCount.get(source)) {
+				primaryMsgs.put(source, backupFullMsgs.remove(source));
+				sendOutput(source);
+			} else {
+				primaryMsgs.put(source, backupFullMsgs.remove(source));
+			}
+		}
+		*/
+	}
 	
 	public void giveLife(){
 		
