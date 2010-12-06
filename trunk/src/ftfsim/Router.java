@@ -83,6 +83,8 @@ public class Router {
 		IPTable.remove(ip);
 		String msg = "IP: " + ip + " deallocated";
 		
+		//Breaks the updateDead thread
+		/*
 		int numberOfRows = sim.getIpTableModel().getRowCount();
 		int count = 0;
 		
@@ -97,7 +99,7 @@ public class Router {
             
             sim.getIpTableModel().addRow(new Object[]{IPTable.get(key), key});
         }
-		
+		*/
 		this.writeToConsole(msg);
 	}
 	

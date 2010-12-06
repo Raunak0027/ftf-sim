@@ -12,7 +12,7 @@ public class Server {
 	private String MACAddress;
 	private String IPAddress;
 	private boolean alive;
-	private Router connectedRouter;
+	private static Router connectedRouter;
 	private boolean primary;
 	private ArrayList<Server> otherServers;
 	private Hashtable<String, Long> shoutsHeard;
@@ -422,9 +422,9 @@ public class Server {
 					otherServers.get(loopCount).getIP().equals("192.168.1.2")){
 					duplex = false;
 					System.out.println("SWITCHED TO SIMPLEx");
-					System.out.println(this.getIP());
-					System.out.println(loopCount);
-					System.out.println(totalOtherServers);
+					//System.out.println(this.getIP());
+					//System.out.println(loopCount);
+					//System.out.println(totalOtherServers);
 					switchToSimplex();
 				} 	
 				//Remove from router
@@ -456,11 +456,12 @@ public class Server {
 	
 	private void switchToSimplex() {
 		System.out.println(backupMsgs.size());
-		/*
-		Enumeration<String> backupKeys = backupMsgs.elements();
+		
+		Enumeration<String> backupKeys = backupMsgs.keys();
 		while (backupKeys.hasMoreElements()) {
 			System.out.println("IN SIMPLEX");
 			String source = backupKeys.nextElement();
+			primaryMsgs.put(source, backupMsgs.remove(source));
 			// Send ACK
 			System.out.println("Current total message: " + primaryMsgs.get(source));
 			System.out.println("Server Sending ACK back to client");
@@ -468,7 +469,7 @@ public class Server {
 			sendPacket(packetReply);
 		}
 		
-		Enumeration<String> fullMsgKeys = backupFullMsgs.elements();
+		Enumeration<String> fullMsgKeys = backupFullMsgs.keys();
 		while (fullMsgKeys.hasMoreElements()) {
 			String source = fullMsgKeys.nextElement();
 			if (clientAckCount.get(source)==serverReplyCount.get(source)) {
@@ -478,7 +479,7 @@ public class Server {
 				primaryMsgs.put(source, backupFullMsgs.remove(source));
 			}
 		}
-		*/
+		
 	}
 	
 	public void giveLife(){
