@@ -8,7 +8,7 @@ public class RandomString {
 		Random random = new Random();
 		String result = "";
 		int length = random.nextInt(maxStringLength);
-		for (int i=0; i<maxStringLength; i++) {
+		for (int i=0; i<length; i++) {
 			result.concat(Integer.toString(random.nextInt()));
 		}
 		
