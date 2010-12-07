@@ -436,7 +436,8 @@ public class Server {
 					
 					//automatic duplex switching not working
 					if ((otherServers.size()>=1)&&(!otherServers.get(0).getIP().equals("192.168.1.1"))
-							&&(!otherServers.get(0).getIP().equals("192.168.1.2"))) {
+							&&(!otherServers.get(0).getIP().equals("192.168.1.2"))
+							  && (this.getIP().equals("192.168.1.1")||this.getIP().equals("192.168.1.2"))) {
 						otherServers.get(0).setIP(removedServerIp);
 					}
 					
