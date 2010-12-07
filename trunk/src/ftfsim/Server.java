@@ -158,6 +158,7 @@ public class Server {
 
 		if(alive){			
 			System.out.println("Received packet.");
+			System.out.println(this.getIP());
 			//record the ACK in hashtable
 			if ((packet.getPayload().equals("ACK")) && (packet.getTotal()==1)) {
 				saveAck(packet);
@@ -435,10 +436,12 @@ public class Server {
 						switchToSimplex();
 
 						//automatic duplex switching not working
-						if ((otherServers.size()>=1)&&(!otherServers.get(0).getIP().equals("192.168.1.1"))
-								&&(!otherServers.get(0).getIP().equals("192.168.1.2"))
-								&& (this.getIP().equals("192.168.1.1")||this.getIP().equals("192.168.1.2"))) {
-							otherServers.get(0).setIP(removedServerIp);
+						if ((connectedRouter.getIPTable().get("192.168.1.3")!=null)
+								&&(this.getIP().equals("192.168.1.1")||this.getIP().equals("192.168.1.2"))){
+							String macNew = (String) connectedRouter.getIPTable().get("192.168.1.3");
+							((Server) connectedRouter.getNodeTable().get(macNew)).setIP(removedServerIp);
+							connectedRouter.allocateIP(removedServerIp, macNew);
+							System.out.println(connectedRouter.getIPTable().size());
 						}
 
 					} 	
