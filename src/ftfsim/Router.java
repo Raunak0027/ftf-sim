@@ -117,5 +117,9 @@ public class Router {
 	public Hashtable getIPTable() {
 		return IPTable;
 	}
+	
+	public Hashtable getNodeTable() {
+		return nodeTable;
+	}
 
 }
