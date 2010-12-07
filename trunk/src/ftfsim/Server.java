@@ -226,6 +226,8 @@ public class Server {
 	}
 	
 	private void sendOutput(String source) {
+		System.out.println("IP " + this.getIP());
+		
 		System.out.println("Got Final Packet!");
 		//String source = packet.getSource();
 		String finalMsg = primaryMsgs.get(source);
@@ -431,6 +433,13 @@ public class Server {
 					//System.out.println(loopCount);
 					//System.out.println(totalOtherServers);
 					switchToSimplex();
+					
+					//automatic duplex switching not working
+					if ((otherServers.size()>=1)&&(!otherServers.get(0).getIP().equals("192.168.1.1"))
+							&&(!otherServers.get(0).getIP().equals("192.168.1.2"))) {
+						otherServers.get(0).setIP(removedServerIp);
+					}
+					
 				} 	
 				//Remove from router
 
@@ -448,9 +457,10 @@ public class Server {
 					}
 				}
 				//System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " 
-				loopCount++;
+				//loopCount++;
 //		+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
 			}
+			writeToDeathConsole("" + duplex);
 			loopCount++;
 		}
 		
