@@ -41,6 +41,7 @@ public class Client {
 			
 			if(packetCounter < packetArray.length)
 			{
+
 				// send the next packet
 				try{
 					Thread.sleep(500);
