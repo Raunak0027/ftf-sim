@@ -417,9 +417,14 @@ public class Server {
 				
 				String msg = "!!! (" + this.getIP() + ") Server: " + mac + " at " + ip + " is dead. Removing from known servers!";
 				
+				connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
+				connectedRouter.removeNode(otherServers.get(loopCount));
+				String removedServerIp = otherServers.get(loopCount).getIP();
+				otherServers.remove(loopCount);
+				
 				writeToDeathConsole(msg);
-				if (otherServers.get(loopCount).getIP().equals("192.168.1.1")||
-					otherServers.get(loopCount).getIP().equals("192.168.1.2")){
+				if (removedServerIp.equals("192.168.1.1")||
+					removedServerIp.equals("192.168.1.2")){
 					duplex = false;
 					System.out.println("SWITCHED TO SIMPLEx");
 					//System.out.println(this.getIP());
@@ -428,9 +433,7 @@ public class Server {
 					switchToSimplex();
 				} 	
 				//Remove from router
-				connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
-				connectedRouter.removeNode(otherServers.get(loopCount));
-				otherServers.remove(loopCount);
+
 
 				break serverListLoop;
 			}else{
@@ -455,8 +458,9 @@ public class Server {
 	
 	
 	private void switchToSimplex() {
-		System.out.println(backupMsgs.size());
-		
+		//System.out.println(backupMsgs.size());
+
+		System.out.println(primaryMsgs.size());
 		Enumeration<String> primaryKeys = primaryMsgs.keys();
 		while (primaryKeys.hasMoreElements()) {
 			String source = primaryKeys.nextElement();
