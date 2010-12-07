@@ -24,8 +24,8 @@ public class Server {
 	private Hashtable<String, String> primaryMsgs;
 	private Hashtable<String, String> backupFullMsgs;
 	private static boolean duplex=false;
-	
-	
+
+
 	// deathPeriod is the period of time in milliseconds,
 	// after not hearing a shout from another server, that we
 	// determine the server to be dead.
@@ -35,8 +35,8 @@ public class Server {
 	// You can test the death detection by setting this value less than the
 	// shoutDelay and detectDeadDelay
 	//private long deathPeriod = 200;
-	
-	
+
+
 	// These values are the delay between shouting and the delay between looking
 	// for dead servers.
 	// NOTE: These values should ideally not be equal as the shouting and detecting threads
@@ -46,23 +46,23 @@ public class Server {
 	public static boolean getMode() {
 		return duplex;
 	}
-	
+
 	public static void setMode(boolean mode) {
 		duplex = mode;
 	}
-	
+
 	public long getDeathPeriod(){
 		return sim.getDeathPeriod();
 	}
-	
+
 	public long getShoutDelay(){
 		return shoutDelay * sim.getSimRate();
 	}
-	
+
 	public long getDetectDeadDelay(){
 		return detectDeadDelay * sim.getSimRate();
 	}
-	
+
 	Server(Router router, String MAC, Simulation sim){
 		MACAddress = new String(MAC);
 		IPAddress = null;
@@ -79,11 +79,11 @@ public class Server {
 		serverReplyCount = new Hashtable<String, Integer>();
 		backupFullMsgs = new Hashtable<String, String>();
 		router.addNode(this);
-		
+
 	}
-	
+
 	private void writeToConsole(String msg){
-		
+
 		sim.getConsoleTextArea().append(msg + "\n");
 		if(sim.getChckbxAutoscroll().isSelected()){
 			sim.getConsoleTextArea().setCaretPosition(sim.getConsoleTextArea().getDocument().getLength());
@@ -91,71 +91,71 @@ public class Server {
 	}
 
 	private void writeToDeathConsole(String msg){
-		
+
 		sim.getDeathConsole().append(msg + "\n");		
 		sim.getDeathConsole().setCaretPosition(sim.getDeathConsole().getDocument().getLength());
-		
+
 	}
-	
-	
+
+
 	public String getMAC(){
 		return MACAddress;
 	}
-	
-	
-	
+
+
+
 	public void setIP(String ip){
 		IPAddress = ip;
 		connectedRouter.allocateIP(this.IPAddress, this.MACAddress);
 	}
-	
+
 	public String getIP(){
 		return IPAddress;
 	}
-	
+
 	public void setPrimary(){
 		primary = true;
 		String msg = "(" + this.getIP() + ") Server: " + this.getMAC() + " has been set as primary";
 		this.writeToConsole(msg);
 	}
-	
+
 	public boolean getPrimary(){
 		return primary;
 	}
-	
+
 	public void setBackup(){
 		primary = false;
 		String msg = "(" + this.getIP() + ") Server: " + this.getMAC() + " has been set as backup";
 		this.writeToConsole(msg);
 	}
-	
+
 	public void knowServer(Server otherServer){
-		
-		
+
+
 		if(!otherServers.contains(otherServer)){
 			otherServers.add(otherServer);
 			String msg = "(" + this.getIP() + ") Server: " + this.getMAC() + " now knows server: " 
 			+ otherServer.getMAC() + " at IP: " + otherServer.getIP();
-			
+
 			this.writeToConsole(msg);
 			this.updateShoutHeard(otherServer.getIP());
 		}
 
-		
+
 	}
-	
+
 	public void forgetServer(Server otherServer){
 		otherServers.remove(otherServer);
 	}
-	
+
 	public void sendPacket(Packet packet){
 		connectedRouter.packetOut(packet);
 	}
-	
-	
-	
+
+
+
 	public void receivePacket(Packet packet){
-		
+
 		if(alive){			
 			System.out.println("Received packet.");
 			//record the ACK in hashtable
@@ -167,22 +167,22 @@ public class Server {
 				saveBackup(packet);
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	private void saveAck(Packet packet) {
 		if (clientAckCount.get(packet.getSource())==null) {
 			clientAckCount.put(packet.getSource(), 0);
 		} else {
 			clientAckCount.put(packet.getSource(),clientAckCount.get(packet.getSource()) + 1);
 		}
-		
+
 		if (primaryMsgs.get(packet.getSource())!=null) {
 			sendOutput(packet.getSource());
 		}
 	}
-	
+
 	private void saveBackup(Packet packet) {
 		//if it is a remainder of a failure
 		if (primaryMsgs.get(packet.getSource())!=null) {
@@ -193,18 +193,18 @@ public class Server {
 			} else if (backupMsgs.get(packet.getSource())!=null){
 				backupMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource())+ packet.getPayload());
 			} else {
-				
+
 			}
-			
+
 			if ((backupMsgs.get(packet.getSource())!=null) && (packet.getPosition()+1==packet.getTotal())) {
 				System.out.println("MOVED TO BACKUPFULL");
 				backupFullMsgs.put(packet.getSource(),backupMsgs.get(packet.getSource()));
 				backupMsgs.remove(packet.getSource());
 			}
-			
+
 		}	
 	}
-	
+
 	private void savePrimary(Packet packet) {
 		if ((primaryMsgs.get(packet.getSource())==null)&&(packet.getPosition()==0)) {
 			primaryMsgs.put(packet.getSource(),packet.getPayload());
@@ -212,7 +212,7 @@ public class Server {
 			primaryMsgs.put(packet.getSource(),primaryMsgs.get(packet.getSource())+ packet.getPayload());
 		} else {
 		}		
-		
+
 		//modify
 		if(packet.getPosition()+1==packet.getTotal()){
 			sendOutput(packet.getSource());
@@ -224,24 +224,24 @@ public class Server {
 			sendPacket(packetReply);
 		}
 	}
-	
+
 	private void sendOutput(String source) {
 		System.out.println("IP " + this.getIP());
-		
+
 		System.out.println("Got Final Packet!");
 		//String source = packet.getSource();
 		String finalMsg = primaryMsgs.get(source);
 		boolean last = false;
 		//receivedMsgs.remove(packet.getSource());
 		System.out.println("Final Message: " + finalMsg);
-		
+
 		// Send result
 		System.out.println("Sending result to client...");
-		
+
 		//needs restructuring
 		String msg = reverseString(finalMsg);
 		Packet[] replyPackets = createPackets(msg, source);
-		
+
 		int packetSendCount = 0;
 		System.out.println(packetSendCount);
 
@@ -256,12 +256,12 @@ public class Server {
 		}
 		talkToServer(source, packetSendCount,last);
 	}
-	
+
 	// Tells the other server from the duo that a response has been fully sent
 	//need to add String parameter to handle deletion when msg is done
 	private void talkToServer(String source, int lastSentPacket, boolean last) {
 		//String source = packet.getSource();
-		
+
 		if (duplex == true) {
 			if (this.getIP().equals("192.168.1.1")) { 
 				for (int i=0;i<=otherServers.size(); i++) {
@@ -277,10 +277,10 @@ public class Server {
 				}
 			}	
 		} else {
-			
+
 		}
 	}
-	
+
 	//TODO
 	private void receiveFromServer(String source, int lastSentPacket, boolean last) {
 		if (last) {
@@ -294,23 +294,23 @@ public class Server {
 			System.out.println("CHECK");
 		}
 	}
-	
-	
+
+
 	private Packet[] createPackets(String msgToSend, String dest)
 	{
 		// create packets based on the string and store
 		double lengthOfMsg = (double) msgToSend.length();
 		double numberOfPackets = (lengthOfMsg/3);
 		numberOfPackets = Math.ceil(numberOfPackets);
-		
+
 		System.out.println(numberOfPackets);
-		
+
 		int index = (int) numberOfPackets;
-		
+
 		System.out.println(index);
 		Packet[] packetArray = new Packet[index];
 		int counter = 0;
-		
+
 		while(msgToSend.length() != 0)
 		{
 			if(msgToSend.length() >= 3)
@@ -320,7 +320,7 @@ public class Server {
 				msgToSend = msgToSend.substring(3, msgToSend.length());
 				packetArray[counter] = packet;
 			}
-			
+
 			else if(msgToSend.length() == 2)
 			{
 				// extract 2 and remove
@@ -328,7 +328,7 @@ public class Server {
 				msgToSend = "";
 				packetArray[counter] = packet;
 			}
-			
+
 			else
 			{
 				//extract one and remove
@@ -336,12 +336,12 @@ public class Server {
 				msgToSend = "";
 				packetArray[counter] = packet;
 			}
-			
+
 			counter++;
 		}
 		return packetArray;
 	}
-	
+
 	private boolean isPrimary(Packet packet) {
 		int lastDigitServer = Integer.parseInt(this.getIP().substring(this.getIP().length() -1));
 		int lastDigitClient = Integer.parseInt(packet.getSource());
@@ -349,18 +349,18 @@ public class Server {
 			return true;
 		} else {
 			if (((lastDigitServer%2==0) && (lastDigitClient%2==0)) ||
-				((lastDigitServer%2==1) && (lastDigitClient%2==1)))	{
+					((lastDigitServer%2==1) && (lastDigitClient%2==1)))	{
 				return true;
 			} else {
 				return false;
 			}
 		}	
 	}
-	
+
 	public void shoutOut(){
 		int numberOfOtherServers = otherServers.size();
 		int shoutCount = 0;
-		
+
 		while(shoutCount < numberOfOtherServers){
 			String msg = "(" + this.getIP() + ") Shouting to: " + otherServers.get(shoutCount).getIP();
 			this.writeToConsole(msg);
@@ -368,147 +368,168 @@ public class Server {
 			try{
 				otherServers.get(shoutCount).hearShout(this.getIP());
 			}catch(Exception e){
-				
+
 			}
 			shoutCount++;
 			numberOfOtherServers = otherServers.size();
 		}
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	public void hearShout(String source){
 		String msg = "(" + this.getIP() + ") Shout heard from: " + source;
 		this.writeToConsole(msg);
-		
+
 		updateShoutHeard(source);
 	}
-	
+
 	private void updateShoutHeard(String ip){
 		Calendar currentTime = Calendar.getInstance();
 		Long currentTimeInMillis = currentTime.getTimeInMillis();
 		shoutsHeard.remove(connectedRouter.getMAC(ip));
 		shoutsHeard.put(connectedRouter.getMAC(ip), currentTimeInMillis);
 		String msg = "(" + this.getIP() + ") Shout recorded from: " + ip + " at time: " + currentTimeInMillis;
-		
+
 		this.writeToConsole(msg);
-		
+
 	}
-	
+
 	public void killServer(){
 		this.alive = false;
 	}
-	
+
 	// ALSO SWITCHES MODES. MINOR BUG WITH SWITCH TO SIMPLEX
 	private void removeDeads(){
-		
+
 		int totalOtherServers = this.otherServers.size();
 		int loopCount = 0;
-		
+
 		serverListLoop:
-		while(loopCount<totalOtherServers){
-			Calendar currentTime = Calendar.getInstance();
-			Long currentTimeInMillis = currentTime.getTimeInMillis();
-			
-			String mac = new String(otherServers.get(loopCount).getMAC());
-			String ip = new String(otherServers.get(loopCount).getIP());
+			while(loopCount<totalOtherServers){
+				Calendar currentTime = Calendar.getInstance();
+				Long currentTimeInMillis = currentTime.getTimeInMillis();
 
-			if(currentTimeInMillis > (shoutsHeard.get(mac) + this.getDeathPeriod())){
-				
-				String msg = "!!! (" + this.getIP() + ") Server: " + mac + " at " + ip + " is dead. Removing from known servers!";
-				
-				connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
-				connectedRouter.removeNode(otherServers.get(loopCount));
-				String removedServerIp = otherServers.get(loopCount).getIP();
-				otherServers.remove(loopCount);
-				
-				writeToDeathConsole(msg);
-				if (removedServerIp.equals("192.168.1.1")||
-					removedServerIp.equals("192.168.1.2")){
-					duplex = false;
-					System.out.println("SWITCHED TO SIMPLEx");
-					//System.out.println(this.getIP());
-					//System.out.println(loopCount);
-					//System.out.println(totalOtherServers);
-					switchToSimplex();
-					
-					//automatic duplex switching not working
-					if ((otherServers.size()>=1)&&(!otherServers.get(0).getIP().equals("192.168.1.1"))
-							&&(!otherServers.get(0).getIP().equals("192.168.1.2"))
-							  && (this.getIP().equals("192.168.1.1")||this.getIP().equals("192.168.1.2"))) {
-						otherServers.get(0).setIP(removedServerIp);
+				String mac = new String(otherServers.get(loopCount).getMAC());
+				String ip = new String(otherServers.get(loopCount).getIP());
+
+				if(currentTimeInMillis > (shoutsHeard.get(mac) + this.getDeathPeriod())){
+
+					String msg = "!!! (" + this.getIP() + ") Server: " + mac + " at " + ip + " is dead. Removing from known servers!";
+
+					connectedRouter.deallocateIP(otherServers.get(loopCount).getIP());
+					connectedRouter.removeNode(otherServers.get(loopCount));
+					String removedServerIp = otherServers.get(loopCount).getIP();
+					otherServers.remove(loopCount);
+
+					writeToDeathConsole(msg);
+					if (removedServerIp.equals("192.168.1.1")||
+							removedServerIp.equals("192.168.1.2")){
+						duplex = false;
+						System.out.println("SWITCHED TO SIMPLEx");
+						//System.out.println(this.getIP());
+						//System.out.println(loopCount);
+						//System.out.println(totalOtherServers);
+						switchToSimplex();
+
+						//automatic duplex switching not working
+						if ((otherServers.size()>=1)&&(!otherServers.get(0).getIP().equals("192.168.1.1"))
+								&&(!otherServers.get(0).getIP().equals("192.168.1.2"))
+								&& (this.getIP().equals("192.168.1.1")||this.getIP().equals("192.168.1.2"))) {
+							otherServers.get(0).setIP(removedServerIp);
+						}
+
+					} 	
+					//Remove from router
+
+
+					break serverListLoop;
+				}else{
+					//MODE SWITCHING
+					if (otherServers.isEmpty()) {
+						duplex = false;
+					} else {
+						if ((connectedRouter.getIPTable().get("192.168.1.1")!= null) &&
+								(connectedRouter.getIPTable().get("192.168.1.2")!=null)) {
+							duplex = true;
+							System.out.println("DUPLEX MODE");
+						}
 					}
-					
-				} 	
-				//Remove from router
-
-
-				break serverListLoop;
-			}else{
-				//MODE SWITCHING
-				if (otherServers.isEmpty()) {
-					duplex = false;
-				} else {
-					if ((connectedRouter.getIPTable().get("192.168.1.1")!= null) &&
-							(connectedRouter.getIPTable().get("192.168.1.2")!=null)) {
-						duplex = true;
-						System.out.println("DUPLEX MODE");
-					}
+					//System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " 
+					//loopCount++;
+					//		+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
 				}
-				//System.out.println("(" + this.getIP() + ") ("+ currentTimeInMillis +") Server at " 
-				//loopCount++;
-//		+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
+				writeToDeathConsole("" + duplex);
+				loopCount++;
 			}
-			writeToDeathConsole("" + duplex);
-			loopCount++;
-		}
-		
+
 	}
-	
-	
+
+
 	private void switchToSimplex() {
 		//System.out.println(backupMsgs.size());
 
-		System.out.println(primaryMsgs.size());
-		Enumeration<String> primaryKeys = primaryMsgs.keys();
-		while (primaryKeys.hasMoreElements()) {
-			String source = primaryKeys.nextElement();
-			System.out.println("Current total message: " + primaryMsgs.get(source));
-			System.out.println("Server Sending ACK back to client");
-			Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
-			sendPacket(packetReply);
-		}	
-		
-		Enumeration<String> backupKeys = backupMsgs.keys();
-		while (backupKeys.hasMoreElements()) {
-			System.out.println("IN SIMPLEX");
-			String source = backupKeys.nextElement();
-			primaryMsgs.put(source, backupMsgs.remove(source));
-			// Send ACK
-			System.out.println("Current total message: " + primaryMsgs.get(source));
-			System.out.println("Server Sending ACK back to client");
-			Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
-			sendPacket(packetReply);
-		}
-		
-		Enumeration<String> fullMsgKeys = backupFullMsgs.keys();
-		while (fullMsgKeys.hasMoreElements()) {
-			String source = fullMsgKeys.nextElement();
-			if (clientAckCount.get(source)==serverReplyCount.get(source)) {
-				primaryMsgs.put(source, backupFullMsgs.remove(source));
-				sendOutput(source);
-			} else {
-				primaryMsgs.put(source, backupFullMsgs.remove(source));
+		Runnable whileLoop1 = new Runnable() {
+			public void run() {
+				System.out.println(primaryMsgs.size());
+				Enumeration<String> primaryKeys = primaryMsgs.keys();
+				while (primaryKeys.hasMoreElements()) {
+					String source = primaryKeys.nextElement();
+					System.out.println("Current total message: " + primaryMsgs.get(source));
+					System.out.println("Server Sending ACK back to client");
+					Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
+					sendPacket(packetReply);
+				}
 			}
-		}
+		};
+
+		Runnable whileLoop2 = new Runnable() {
+			public void run() {
+				Enumeration<String> backupKeys = backupMsgs.keys();
+				while (backupKeys.hasMoreElements()) {
+					System.out.println("IN SIMPLEX");
+					String source = backupKeys.nextElement();
+					primaryMsgs.put(source, backupMsgs.remove(source));
+					// Send ACK
+					System.out.println("Current total message: " + primaryMsgs.get(source));
+					System.out.println("Server Sending ACK back to client");
+					Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
+					sendPacket(packetReply);
+				}
+			}
+		};
+
+
+		Runnable whileLoop3 = new Runnable() {
+			public void run() {
+				Enumeration<String> fullMsgKeys = backupFullMsgs.keys();
+				while (fullMsgKeys.hasMoreElements()) {
+					String source = fullMsgKeys.nextElement();
+					if (clientAckCount.get(source)==serverReplyCount.get(source)) {
+						primaryMsgs.put(source, backupFullMsgs.remove(source));
+						sendOutput(source);
+					} else {
+						primaryMsgs.put(source, backupFullMsgs.remove(source));
+					}
+				}
+			}
+		};
 		
+		Thread whileLoop1Thread = new Thread (whileLoop1);
+		Thread whileLoop2Thread = new Thread (whileLoop2);
+		Thread whileLoop3Thread = new Thread (whileLoop3);
+		
+		whileLoop1Thread.start();
+		whileLoop2Thread.start();
+		whileLoop3Thread.start();
+
 	}
-	
+
 	public void giveLife(){
-		
-		
+
+
 		/* 
 		 * This is where we define the server's internal processes
 		 * for e.g. doShouts, removeDeadServers, etc...
@@ -521,69 +542,69 @@ public class Server {
 		 * to be wrapped in a try/catch block.
 		 * 
 		 */
-		
+
 		this.alive = true;
-		
+
 		Runnable doShouts = new Runnable() {
 			public void run() {
-				
+
 				int numberOfOtherServers = otherServers.size();
 				int count = 0;
-				
+
 				while(count < numberOfOtherServers){
 
 					try{
 						otherServers.get(count).hearShout(getIP());
 					}catch(Exception e){
-						
+
 					}
 					count++;
 					numberOfOtherServers = otherServers.size();
 				}
-				
-				
+
+
 				while(alive){
-					
+
 					try{
 						shoutOut();
 						Thread.sleep(getShoutDelay());
 					}catch(Exception e){
 						// do nothing
 					}
-					
+
 					//System.out.print(alive);
 				}
 			}
 		};
-		
-		
+
+
 		Runnable removeDeadServers = new Runnable() {
 			public void run(){
 				while(alive){
 					try{
 						removeDeads();
 						//writeToConsole("Removing Deads");
-						
+
 						Thread.sleep(getDetectDeadDelay());
 					}catch(Exception e){
-						
+
 					}
 					//System.out.print(alive);
 				}
 			}
 		};
-		
-		
+
+
 		// Initialise and start threads
 		Thread doShoutsThread = new Thread(doShouts);
 		Thread removeDeadServersThread = new Thread(removeDeadServers);
 		doShoutsThread.start();
 		removeDeadServersThread.start();
-		
+
 	}
-	
-	
-	
+
+
+
 	public String reverseString(String msg){
 		String reverse = new StringBuffer(msg).reverse().toString();
 		return reverse;
