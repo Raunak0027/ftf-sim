@@ -457,6 +457,15 @@ public class Server {
 	private void switchToSimplex() {
 		System.out.println(backupMsgs.size());
 		
+		Enumeration<String> primaryKeys = primaryMsgs.keys();
+		while (primaryKeys.hasMoreElements()) {
+			String source = primaryKeys.nextElement();
+			System.out.println("Current total message: " + primaryMsgs.get(source));
+			System.out.println("Server Sending ACK back to client");
+			Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
+			sendPacket(packetReply);
+		}	
+		
 		Enumeration<String> backupKeys = backupMsgs.keys();
 		while (backupKeys.hasMoreElements()) {
 			System.out.println("IN SIMPLEX");
