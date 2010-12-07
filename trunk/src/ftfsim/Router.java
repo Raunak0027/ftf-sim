@@ -74,7 +74,7 @@ public class Router {
 	public void allocateIP(String ip, String mac){
 		IPTable.remove(ip);
 		IPTable.put(ip, mac);
-		sim.getIpTableModel().addRow(new Object[]{mac, ip});
+		//sim.getIpTableModel().addRow(new Object[]{mac, ip});
 		String msg = "IP: " + ip + " allocated to: " + mac;
 		this.writeToConsole(msg);
 	}

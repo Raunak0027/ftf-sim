@@ -57,7 +57,6 @@ public class Simulation extends JFrame {
 	private JCheckBox chckbxAutoscroll;
 	private JSlider sldrSimRate;
 	private JSlider sldrDeath;
-	private JTable ipJTable;
 	private JTextArea deathConsole;
 	private JTextField serverIndexTxt;
 
@@ -335,24 +334,8 @@ public class Simulation extends JFrame {
 		mainPanel.add(routerStatsFrame);
 		routerStatsFrame.getContentPane().setLayout(null);
 
-		JScrollPane ipTablePane = new JScrollPane();
-		ipTablePane.setBounds(6, 34, 280, 95);
-		routerStatsFrame.getContentPane().add(ipTablePane);
-
-
-		ipJTable = new JTable();
-		ipTablePane.setViewportView(ipJTable);
-		ipJTable.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		ipJTable.setColumnSelectionAllowed(true);
-		ipJTable.setCellSelectionEnabled(true);
-		ipJTable.setModel(ipTableModel);
-
-		JLabel lblIpAllocation = new JLabel("IP Allocation:");
-		lblIpAllocation.setBounds(6, 6, 83, 16);
-		routerStatsFrame.getContentPane().add(lblIpAllocation);
-
 		JScrollPane routerConsoleScroll = new JScrollPane();
-		routerConsoleScroll.setBounds(6, 166, 280, 96);
+		routerConsoleScroll.setBounds(6, 34, 280, 228);
 		routerStatsFrame.getContentPane().add(routerConsoleScroll);
 
 		routerConsole = new JTextArea();
@@ -360,7 +343,7 @@ public class Simulation extends JFrame {
 		routerConsoleScroll.setViewportView(routerConsole);
 
 		JLabel lblRouterConsole = new JLabel("Router Console:");
-		lblRouterConsole.setBounds(6, 141, 100, 16);
+		lblRouterConsole.setBounds(6, 6, 100, 16);
 		routerStatsFrame.getContentPane().add(lblRouterConsole);
 
 		JLabel label = new JLabel("", image, JLabel.CENTER);
@@ -368,6 +351,7 @@ public class Simulation extends JFrame {
 		mainPanel.add(label);
 
 		JButton btnNewSimulation = new JButton("New Simulation");
+		btnNewSimulation.setEnabled(false);
 		btnNewSimulation.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -395,14 +379,6 @@ public class Simulation extends JFrame {
 		});
 		btnNewSimulation.setBounds(1036, 6, 124, 29);
 		mainPanel.add(btnNewSimulation);
-
-
-
-
-
-
-		ipJTable.getColumnModel().getColumn(0).setPreferredWidth(104);
-		ipJTable.getColumnModel().getColumn(1).setPreferredWidth(119);
 
 
 		routerStatsFrame.setVisible(true);
@@ -503,12 +479,12 @@ public class Simulation extends JFrame {
 	public JSlider getSldrDeath() {
 		return sldrDeath;
 	}
-	public DefaultTableModel getIpTableModel(){
-		return ipTableModel;
-	}
-	public JTable getIpJTable() {
-		return ipJTable;
-	}
+	//public DefaultTableModel getIpTableModel(){
+	//	return ipTableModel;
+	//}
+	//public JTable getIpJTable() {
+	//	return ipJTable;
+	//}
 	public JButton getBtnCreateServer() {
 		return btnCreateServer;
 	}
