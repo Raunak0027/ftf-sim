@@ -87,8 +87,8 @@ public class Simulation extends JFrame {
 		macExamples[0] = "00-0C-F1-56-98-AD";
 		macExamples[1] = "00-0A-B2-33-F1-11";
 		macExamples[2] = "1F-14-F6-21-AA-CA";
-		macExamples[3] = "";
-		macExamples[4] = "";
+		macExamples[3] = "1C-15-F4-22-AA-BA";
+		macExamples[4] = "2F-12-12-33-AB-CC";
 
 		setSize(1166, 716);
 		setTitle("Simulation");
