@@ -41,6 +41,7 @@ public class Simulation extends JFrame {
 	private static Server[] servers;
 	private static int instantiatedServerCount;
 	private static int instantiatedClientCount;
+	private static int startedClientCount;
 	private Client[] clients = new Client[1000];
 	public int simRate;
 	public int deathPeriod;
@@ -115,7 +116,7 @@ public class Simulation extends JFrame {
 			e1.printStackTrace();
 		}
 		simSettingsFrame.setToolTipText("Adjust variables in the simulation environment");
-		simSettingsFrame.setBounds(16, 6, 358, 613);
+		simSettingsFrame.setBounds(16, 6, 358, 663);
 		mainPanel.add(simSettingsFrame);
 		simSettingsFrame.getContentPane().setLayout(null);
 
@@ -222,7 +223,7 @@ public class Simulation extends JFrame {
 		});
 
 		JTabbedPane clientsPane = new JTabbedPane(JTabbedPane.TOP);
-		clientsPane.setBounds(0, 305, 334, 256);
+		clientsPane.setBounds(0, 305, 334, 306);
 		simSettingsFrame.getContentPane().add(clientsPane);
 
 		JPanel createClientPanel = new JPanel();
@@ -230,7 +231,7 @@ public class Simulation extends JFrame {
 		createClientPanel.setLayout(null);
 
 		JButton btnCreateClient = new JButton("Create Client");
-		btnCreateClient.setBounds(6, 6, 125, 29);
+		btnCreateClient.setBounds(6, 6, 106, 29);
 		createClientPanel.add(btnCreateClient);
 		
 		JButton btnCreateClients = new JButton("Create 100 Clients");
@@ -252,7 +253,7 @@ public class Simulation extends JFrame {
 				create100ClientsThread.start();
 			}
 		});
-		btnCreateClients.setBounds(130, 6, 153, 29);
+		btnCreateClients.setBounds(119, 6, 153, 29);
 		createClientPanel.add(btnCreateClients);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
@@ -279,7 +280,7 @@ public class Simulation extends JFrame {
 				System.out.println(instantiatedClientCount);
 				
 				while(loopCount < instantiatedClientCount){
-					System.out.println("Current Message at Client: " + loopCount+ "" + clients[loopCount].getReceivedMsg() + " Packet Counter = " + clients[loopCount].getPacketCount());
+					System.out.println("Current Message at Client: " + loopCount+ "" + clients[loopCount].getReceivedMsg() + " Packet Array Size = " + clients[loopCount].getPacketArray().length);
 					loopCount++;
 				}
 				
@@ -287,6 +288,23 @@ public class Simulation extends JFrame {
 		});
 		btnDebug.setBounds(1, 172, 117, 29);
 		createClientPanel.add(btnDebug);
+		
+		JButton btnStartClients = new JButton("Start Clients");
+		btnStartClients.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				int loopCount = 0;
+				while(loopCount < instantiatedClientCount){
+					startClients();
+					loopCount++;
+				}
+				
+				
+			}
+		});
+		btnStartClients.setBounds(155, 204, 117, 29);
+		createClientPanel.add(btnStartClients);
 		btnCreateClient.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -507,19 +525,29 @@ public class Simulation extends JFrame {
 	public void createClientWithOutGUI(){
 		clients[instantiatedClientCount] = new Client(new String("" + instantiatedClientCount), router , sim);
 		//clientFrames[instantiatedClientCount] = new ClientGUIFrame(clients[instantiatedClientCount], mainPanel);
-
-		Runnable startClients = new Runnable(){
-			public void run(){
-				clients[instantiatedClientCount].startSending("This is a test. This is a test. This is a test. This is a test.");
-			}
-		};
-		
-		Thread startClientsThread = new Thread(startClients);
-		startClientsThread.start();
 		
 		instantiatedClientCount++;
 	}
 	
+	public void startClients(){
+		
+		
+			Runnable startClients = new Runnable(){
+				
+				public void run(){
+					clients[startedClientCount].startSending("This is a test. This is a test. This is a test.");
+				}
+			};
+			
+			Thread startClientsThread = new Thread(startClients);
+			startClientsThread.start();
+			startedClientCount++;
+		
+			
+		
+		
+		
+	}
 	
 
 	public void writeToClientConsole(int clientId, String msg){
