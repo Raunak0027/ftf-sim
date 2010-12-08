@@ -41,7 +41,7 @@ public class Simulation extends JFrame {
 	private static Server[] servers;
 	private static int instantiatedServerCount;
 	private static int instantiatedClientCount;
-	private Client[] clients = new Client[100];
+	private Client[] clients = new Client[1000];
 	public int simRate;
 	public int deathPeriod;
 
@@ -66,6 +66,7 @@ public class Simulation extends JFrame {
 	private String[] macExamples = new String[5];
 	int macExampleCount;
 	private DefaultTableModel ipTableModel;
+	private JTextArea globalClientConsole;
 
 
 
@@ -113,7 +114,7 @@ public class Simulation extends JFrame {
 			e1.printStackTrace();
 		}
 		simSettingsFrame.setToolTipText("Adjust variables in the simulation environment");
-		simSettingsFrame.setBounds(16, 6, 358, 448);
+		simSettingsFrame.setBounds(16, 6, 358, 569);
 		mainPanel.add(simSettingsFrame);
 		simSettingsFrame.getContentPane().setLayout(null);
 
@@ -220,7 +221,7 @@ public class Simulation extends JFrame {
 		});
 
 		JTabbedPane clientsPane = new JTabbedPane(JTabbedPane.TOP);
-		clientsPane.setBounds(0, 305, 334, 97);
+		clientsPane.setBounds(0, 305, 334, 212);
 		simSettingsFrame.getContentPane().add(clientsPane);
 
 		JPanel createClientPanel = new JPanel();
@@ -230,6 +231,35 @@ public class Simulation extends JFrame {
 		JButton btnCreateClient = new JButton("Create Client");
 		btnCreateClient.setBounds(6, 6, 125, 29);
 		createClientPanel.add(btnCreateClient);
+		
+		JButton btnCreateClients = new JButton("Create 100 Clients");
+		btnCreateClients.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+
+				Runnable create100Clients = new Runnable(){
+					public void run(){
+						int count = 0;
+						while(count < 100){
+							createClientWithOutGUI();
+							count++;
+						}
+					}
+				};
+				
+				Thread create100ClientsThread = new Thread(create100Clients);
+				create100ClientsThread.start();
+			}
+		});
+		btnCreateClients.setBounds(130, 6, 153, 29);
+		createClientPanel.add(btnCreateClients);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(6, 47, 301, 113);
+		createClientPanel.add(scrollPane_1);
+		
+		globalClientConsole = new JTextArea();
+		scrollPane_1.setViewportView(globalClientConsole);
 		btnCreateClient.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -446,10 +476,32 @@ public class Simulation extends JFrame {
 
 		instantiatedClientCount++;
 	}
+	
+	public void createClientWithOutGUI(){
+		clients[instantiatedClientCount] = new Client(new String("" + instantiatedClientCount), router , sim);
+		//clientFrames[instantiatedClientCount] = new ClientGUIFrame(clients[instantiatedClientCount], mainPanel);
+
+		Runnable startClients = new Runnable(){
+			public void run(){
+				clients[instantiatedClientCount].startSending("This is a test. This is a test. This is a test. This is a test.");
+			}
+		};
+		
+		Thread startClientsThread = new Thread(startClients);
+		startClientsThread.start();
+		
+		instantiatedClientCount++;
+	}
+	
+	
 
 	public void writeToClientConsole(int clientId, String msg){
 		// System.out.println("Trying to write: " + msg + " to client: " + clientId + " console.");
-		clientFrames[clientId].writeToConsole(msg);
+		try{
+			clientFrames[clientId].writeToConsole(msg);
+		}catch(Exception e){
+			getGlobalClientConsole().append(msg + "\n");
+		}
 
 	}
 
@@ -499,5 +551,8 @@ public class Simulation extends JFrame {
 	}
 	public JTextField getServerIndexTxt() {
 		return serverIndexTxt;
+	}
+	public JTextArea getGlobalClientConsole() {
+		return globalClientConsole;
 	}
 }
