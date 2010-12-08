@@ -193,4 +193,8 @@ public class Client {
 	public int getPacketCount(){
 		return packetCounter;
 	}
+	
+	public Packet[] getPacketArray(){
+		return packetArray;
+	}
 }
