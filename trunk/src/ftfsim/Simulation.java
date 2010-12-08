@@ -67,6 +67,7 @@ public class Simulation extends JFrame {
 	int macExampleCount;
 	private DefaultTableModel ipTableModel;
 	private JTextArea globalClientConsole;
+	private JLabel lblCorrectResults;
 
 
 
@@ -114,7 +115,7 @@ public class Simulation extends JFrame {
 			e1.printStackTrace();
 		}
 		simSettingsFrame.setToolTipText("Adjust variables in the simulation environment");
-		simSettingsFrame.setBounds(16, 6, 358, 569);
+		simSettingsFrame.setBounds(16, 6, 358, 613);
 		mainPanel.add(simSettingsFrame);
 		simSettingsFrame.getContentPane().setLayout(null);
 
@@ -221,7 +222,7 @@ public class Simulation extends JFrame {
 		});
 
 		JTabbedPane clientsPane = new JTabbedPane(JTabbedPane.TOP);
-		clientsPane.setBounds(0, 305, 334, 212);
+		clientsPane.setBounds(0, 305, 334, 256);
 		simSettingsFrame.getContentPane().add(clientsPane);
 
 		JPanel createClientPanel = new JPanel();
@@ -260,6 +261,14 @@ public class Simulation extends JFrame {
 		
 		globalClientConsole = new JTextArea();
 		scrollPane_1.setViewportView(globalClientConsole);
+		
+		JLabel lblCorrect = new JLabel("Correct Results");
+		lblCorrect.setBounds(130, 172, 96, 16);
+		createClientPanel.add(lblCorrect);
+		
+		lblCorrectResults = new JLabel("0");
+		lblCorrectResults.setBounds(238, 172, 61, 16);
+		createClientPanel.add(lblCorrectResults);
 		btnCreateClient.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -497,8 +506,16 @@ public class Simulation extends JFrame {
 
 	public void writeToClientConsole(int clientId, String msg){
 		// System.out.println("Trying to write: " + msg + " to client: " + clientId + " console.");
+		
+		if(msg.contentEquals("CORRECT MESSAGE RECEIVED!!")){
+			int numberOfCorrect = new Integer(getLblCorrectResults().getText());
+			numberOfCorrect++;
+			getLblCorrectResults().setText("" + numberOfCorrect);
+		}
+		
 		try{
 			clientFrames[clientId].writeToConsole(msg);
+			getGlobalClientConsole().append(msg + "\n");
 		}catch(Exception e){
 			getGlobalClientConsole().append(msg + "\n");
 		}
@@ -554,5 +571,8 @@ public class Simulation extends JFrame {
 	}
 	public JTextArea getGlobalClientConsole() {
 		return globalClientConsole;
+	}
+	public JLabel getLblCorrectResults() {
+		return lblCorrectResults;
 	}
 }
