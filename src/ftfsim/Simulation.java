@@ -269,6 +269,24 @@ public class Simulation extends JFrame {
 		lblCorrectResults = new JLabel("0");
 		lblCorrectResults.setBounds(238, 172, 61, 16);
 		createClientPanel.add(lblCorrectResults);
+		
+		JButton btnDebug = new JButton("Debug");
+		btnDebug.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				int loopCount = 0;
+				System.out.println(instantiatedClientCount);
+				
+				while(loopCount < instantiatedClientCount){
+					System.out.println("Current Message at Client: " + loopCount+ "" + clients[loopCount].getReceivedMsg() + " Packet Counter = " + clients[loopCount].getPacketCount());
+					loopCount++;
+				}
+				
+			}
+		});
+		btnDebug.setBounds(1, 172, 117, 29);
+		createClientPanel.add(btnDebug);
 		btnCreateClient.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {

@@ -185,4 +185,12 @@ public class Client {
 		String reverse = new StringBuffer(msg).reverse().toString();
 		return reverse;
 	}
+	
+	public String getReceivedMsg(){
+		return receivedMessage;
+	}
+	
+	public int getPacketCount(){
+		return packetCounter;
+	}
 }
