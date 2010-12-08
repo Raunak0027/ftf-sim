@@ -507,7 +507,7 @@ public class Simulation extends JFrame {
 	public void writeToClientConsole(int clientId, String msg){
 		// System.out.println("Trying to write: " + msg + " to client: " + clientId + " console.");
 		
-		if(msg.contentEquals("CORRECT MESSAGE RECEIVED!!")){
+		if(msg.startsWith("CORRECT MESSAGE RECEIVED!!")){
 			int numberOfCorrect = new Integer(getLblCorrectResults().getText());
 			numberOfCorrect++;
 			getLblCorrectResults().setText("" + numberOfCorrect);
