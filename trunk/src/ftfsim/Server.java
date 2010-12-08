@@ -433,14 +433,10 @@ public class Server {
 						//System.out.println(this.getIP());
 						//System.out.println(loopCount);
 						//System.out.println(totalOtherServers);
-						Runnable simplexSwitch = new Runnable(){
-							public void run(){
-								switchToSimplex();
-							}
-						};
 						
-						Thread simplexSwitchThread = new Thread(simplexSwitch);
-						simplexSwitchThread.start();
+					
+						switchToSimplex();
+					
 
 						//automatic duplex switching not working
 						if ((connectedRouter.getIPTable().get("192.168.1.3")!=null)
