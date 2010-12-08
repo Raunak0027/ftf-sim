@@ -9,6 +9,7 @@ public class Client {
 	int packetCounter = 1;
 	Packet[] receivedArray;
 	String receivedMessage = "";
+	String messageSent  = "";
 	
 	Client(String id,Router router, Simulation sim){
 		ClientId = new String(id);
@@ -128,6 +129,7 @@ public class Client {
 	
 	public void  startSending(String msgToSend)
 	{
+		messageSent = msgToSend;
 		createPackets(msgToSend);
 		sendPacket(packetArray[0]);
 		packetCounter = 1;
@@ -166,9 +168,21 @@ public class Client {
 			}
 			
 			sim.writeToClientConsole(new Integer(ClientId), "Message received: " + receivedMessage);
+			
+			if(messageSent.contentEquals(this.reverseString(receivedMessage))){
+				sim.writeToClientConsole(new Integer(ClientId), "CORRECT MESSAGE RECEIVED!!");
+			}
+			
+			 
+			
 			receivedArray = null;
 			receivedMessage = "";
 			packetCounter = 1;
 		}
+	}
+	
+	public String reverseString(String msg){
+		String reverse = new StringBuffer(msg).reverse().toString();
+		return reverse;
 	}
 }
