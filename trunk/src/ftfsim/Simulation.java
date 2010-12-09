@@ -42,7 +42,7 @@ public class Simulation extends JFrame {
 	private static int instantiatedServerCount;
 	private static int instantiatedClientCount;
 	private static int startedClientCount;
-	private Client[] clients = new Client[1000];
+	private Client[] clients = new Client[500];
 	public int simRate;
 	public int deathPeriod;
 
@@ -81,6 +81,7 @@ public class Simulation extends JFrame {
 		macExampleCount = 0;
 		instantiatedServerCount = 0;
 		instantiatedClientCount = 0;
+		startedClientCount = 0;
 		ipTableModel = new DefaultTableModel();
 
 		ipTableModel.addColumn("MAC Address");
@@ -261,6 +262,7 @@ public class Simulation extends JFrame {
 		createClientPanel.add(scrollPane_1);
 		
 		globalClientConsole = new JTextArea();
+		globalClientConsole.setFont(new Font("Courier New", Font.PLAIN, 13));
 		scrollPane_1.setViewportView(globalClientConsole);
 		
 		JLabel lblCorrect = new JLabel("Correct Results");
@@ -280,7 +282,8 @@ public class Simulation extends JFrame {
 				System.out.println(instantiatedClientCount);
 				
 				while(loopCount < instantiatedClientCount){
-					System.out.println("Current Message at Client: " + loopCount+ "" + clients[loopCount].getReceivedMsg() + " Packet Array Size = " + clients[loopCount].getPacketArray().length);
+					System.out.println("Current Message at Client: " + loopCount+ "" + clients[loopCount].getReceivedMsg());
+					
 					loopCount++;
 				}
 				
@@ -541,6 +544,11 @@ public class Simulation extends JFrame {
 			
 			Thread startClientsThread = new Thread(startClients);
 			startClientsThread.start();
+			try{
+				Thread.sleep(25);
+			}catch(Exception e){
+				
+			}
 			startedClientCount++;
 		
 			
@@ -562,8 +570,10 @@ public class Simulation extends JFrame {
 		try{
 			clientFrames[clientId].writeToConsole(msg);
 			getGlobalClientConsole().append(msg + "\n");
+			getGlobalClientConsole().setCaretPosition(getGlobalClientConsole().getDocument().getLength());
 		}catch(Exception e){
 			getGlobalClientConsole().append(msg + "\n");
+			getGlobalClientConsole().setCaretPosition(getGlobalClientConsole().getDocument().getLength());
 		}
 
 	}
