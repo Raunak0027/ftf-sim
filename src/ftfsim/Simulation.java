@@ -23,8 +23,7 @@ import javax.swing.JTextField;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
-import java.math.BigInteger;
-import java.security.SecureRandom;
+import java.util.UUID;
 import java.awt.Color;
 
 
@@ -526,12 +525,12 @@ public class Simulation extends JFrame {
 			Runnable startClients = new Runnable(){
 				
 				public void run(){
-					//String msg = UUID.randomUUID().toString() + "a";
+					String msg = UUID.randomUUID().toString();
 					//String msg = "asdajskasjka sfyaksfhak shks dhaksjhdk asjh akshj aksjh jkhdgf ksdjhfg kajshf zjsdfgzksf";
-					SecureRandom random = new SecureRandom();
-					String msg = new BigInteger(130, random).toString(132);
+					//SecureRandom random = new SecureRandom();
+					//String msg = new BigInteger(130, random).toString(132);
 					msg = msg.replace("-", "");
-					clients[startedClientCount].startSending(msg);
+					clients[startedClientCount++].startSending(msg);
 				}
 			};
 			
@@ -542,7 +541,7 @@ public class Simulation extends JFrame {
 			}catch(Exception e){
 				
 			}
-			startedClientCount++;
+			//startedClientCount++;
 		
 			
 		
