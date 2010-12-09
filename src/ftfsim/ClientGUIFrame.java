@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JTextField;
+import java.awt.Font;
 
 public class ClientGUIFrame extends JInternalFrame {
 	
@@ -34,6 +35,7 @@ public class ClientGUIFrame extends JInternalFrame {
         this.getContentPane().add(consoleScroll);
         
         consoleArea = new JTextArea();
+        consoleArea.setFont(new Font("Courier New", Font.PLAIN, 13));
         consoleScroll.setViewportView(consoleArea);
         
         JButton btnSendTest = new JButton("Send Msg");

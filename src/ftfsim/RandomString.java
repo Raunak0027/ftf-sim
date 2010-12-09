@@ -2,9 +2,9 @@ package ftfsim;
 import java.util.Random;
 
 public class RandomString {
-	private int maxStringLength = 100;
+	private static int maxStringLength = 100;
 	
-	public String generateRandomString() {
+	public static String generateRandomString() {
 		Random random = new Random();
 		String result = "";
 		int length = random.nextInt(maxStringLength);
