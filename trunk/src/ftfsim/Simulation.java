@@ -279,6 +279,7 @@ public class Simulation extends JFrame {
 				int loopCount = 0;
 				while(loopCount < instantiatedClientCount){
 					startClients();
+					startedClientCount++;
 					loopCount++;
 				}
 				
@@ -526,18 +527,21 @@ public class Simulation extends JFrame {
 				
 				public void run(){
 					String msg = UUID.randomUUID().toString();
+					msg = msg + UUID.randomUUID().toString();
+					msg = msg + UUID.randomUUID().toString();
+					msg = msg + UUID.randomUUID().toString();
 					//String msg = "asdajskasjka sfyaksfhak shks dhaksjhdk asjh akshj aksjh jkhdgf ksdjhfg kajshf zjsdfgzksf";
 					//SecureRandom random = new SecureRandom();
 					//String msg = new BigInteger(130, random).toString(132);
 					msg = msg.replace("-", "");
-					clients[startedClientCount++].startSending(msg);
+					clients[startedClientCount].startSending(msg);
 				}
 			};
 			
 			Thread startClientsThread = new Thread(startClients);
 			startClientsThread.start();
 			try{
-				Thread.sleep(50);
+				Thread.sleep(150);
 			}catch(Exception e){
 				
 			}
