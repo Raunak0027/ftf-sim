@@ -16,10 +16,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.BevelBorder;
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -28,7 +25,6 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.UUID;
 import java.awt.Color;
 
 

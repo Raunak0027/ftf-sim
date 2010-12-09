@@ -1,6 +1,5 @@
 package ftfsim;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 public class Router {
@@ -114,11 +113,11 @@ public class Router {
 		return IPTable.get(ip);
 	}
 	
-	public Hashtable getIPTable() {
+	public Hashtable<String, String> getIPTable() {
 		return IPTable;
 	}
 	
-	public Hashtable getNodeTable() {
+	public Hashtable<String, Server> getNodeTable() {
 		return nodeTable;
 	}
 
