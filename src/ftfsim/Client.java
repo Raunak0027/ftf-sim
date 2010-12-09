@@ -16,6 +16,7 @@ public class Client {
 		this.router = router;
 		router.addClient(this);
 		this.sim = sim;
+		sim.writeToClientConsole(new Integer(ClientId), "Client Created! ID: " + ClientId);
 	}
 	
 	public void sendPacket(Packet packet) {

@@ -485,8 +485,15 @@ public class Server {
 					String source = primaryKeys.nextElement();
 					System.out.println("Current total message: " + primaryMsgs.get(source));
 					System.out.println("Server Sending ACK back to client");
-					Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
-					sendPacket(packetReply);
+					final Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
+					Runnable sendOutput = new Runnable(){
+						public void run(){
+							sendPacket(packetReply);
+						}
+					};
+					
+					Thread sendOutputThread = new Thread(sendOutput);
+					sendOutputThread.start();
 				}
 			}
 		};
@@ -501,8 +508,15 @@ public class Server {
 					// Send ACK
 					System.out.println("Current total message: " + primaryMsgs.get(source));
 					System.out.println("Server Sending ACK back to client");
-					Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
-					sendPacket(packetReply);
+					final Packet packetReply = new Packet("SERVER", source, "ACK", 0, 1);
+					Runnable sendOutput = new Runnable(){
+						public void run(){
+							sendPacket(packetReply);
+						}
+					};
+					
+					Thread sendOutputThread = new Thread(sendOutput);
+					sendOutputThread.start();
 				}
 			}
 		};
@@ -512,10 +526,18 @@ public class Server {
 			public void run() {
 				Enumeration<String> fullMsgKeys = backupFullMsgs.keys();
 				while (fullMsgKeys.hasMoreElements()) {
-					String source = fullMsgKeys.nextElement();
+					final String source = fullMsgKeys.nextElement();
 					if (clientAckCount.get(source)==serverReplyCount.get(source)) {
 						primaryMsgs.put(source, backupFullMsgs.remove(source));
-						sendOutput(source);
+						Runnable sendOutput = new Runnable(){
+							public void run(){
+								sendOutput(source);
+							}
+						};
+						Thread sendOutputThread = new Thread(sendOutput);
+						sendOutputThread.start();
+						
+						
 					} else {
 						primaryMsgs.put(source, backupFullMsgs.remove(source));
 					}
