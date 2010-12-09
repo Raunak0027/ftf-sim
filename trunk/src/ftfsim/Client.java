@@ -172,6 +172,8 @@ public class Client {
 			
 			if(messageSent.contentEquals(this.reverseString(receivedMessage))){
 				sim.writeToClientConsole(new Integer(ClientId), "CORRECT MESSAGE RECEIVED!! Client ID: " + ClientId);
+			}else{
+				sim.writeToClientConsole(new Integer(ClientId), "INCORRECT MESSAGE RECEIVED!! Client ID: " + ClientId);
 			}
 			
 			 

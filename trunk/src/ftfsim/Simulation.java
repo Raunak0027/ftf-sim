@@ -26,6 +26,9 @@ import javax.swing.JTextField;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.UUID;
 import java.awt.Color;
 
 
@@ -69,6 +72,7 @@ public class Simulation extends JFrame {
 	private DefaultTableModel ipTableModel;
 	private JTextArea globalClientConsole;
 	private JLabel lblCorrectResults;
+	private JLabel lblIncorrectResults;
 
 
 
@@ -117,7 +121,7 @@ public class Simulation extends JFrame {
 			e1.printStackTrace();
 		}
 		simSettingsFrame.setToolTipText("Adjust variables in the simulation environment");
-		simSettingsFrame.setBounds(16, 6, 358, 663);
+		simSettingsFrame.setBounds(16, 6, 358, 629);
 		mainPanel.add(simSettingsFrame);
 		simSettingsFrame.getContentPane().setLayout(null);
 
@@ -171,7 +175,7 @@ public class Simulation extends JFrame {
 		speedPanel.add(txtpnDeathPeriodms);
 
 		JTabbedPane serverPane = new JTabbedPane(JTabbedPane.TOP);
-		serverPane.setBounds(0, 157, 334, 146);
+		serverPane.setBounds(0, 157, 334, 120);
 		simSettingsFrame.getContentPane().add(serverPane);
 
 		JPanel createServerPanel = new JPanel();
@@ -188,16 +192,12 @@ public class Simulation extends JFrame {
 		macAddressField.setText("00-0B-22-B3-01-FF");
 		macAddressField.setColumns(10);
 
-		JLabel lblIpAddress = new JLabel("IP Address:");
-		lblIpAddress.setBounds(6, 40, 97, 16);
-		createServerPanel.add(lblIpAddress);
-
 
 
 
 		btnCreateServer = new JButton("Create Server");
 
-		btnCreateServer.setBounds(139, 65, 117, 29);
+		btnCreateServer.setBounds(103, 40, 117, 29);
 		createServerPanel.add(btnCreateServer);
 
 		JPanel killServerPanel = new JPanel();
@@ -205,26 +205,29 @@ public class Simulation extends JFrame {
 		killServerPanel.setLayout(null);
 
 		JButton btnKill = new JButton("Kill");
-		btnKill.setBounds(150, 7, 51, 29);
+		btnKill.setBounds(140, 7, 51, 29);
 		killServerPanel.add(btnKill);
 
 		serverIndexTxt = new JTextField();
-		serverIndexTxt.setBounds(89, 6, 61, 28);
+		serverIndexTxt.setBounds(77, 6, 51, 28);
 		killServerPanel.add(serverIndexTxt);
 		serverIndexTxt.setColumns(10);
 
-		JLabel lblKillByIndex = new JLabel("Kill by Index");
+		JLabel lblKillByIndex = new JLabel("192.168.1.");
 		lblKillByIndex.setBounds(6, 12, 78, 16);
 		killServerPanel.add(lblKillByIndex);
 		btnKill.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				servers[new Integer(getServerIndexTxt().getText())].killServer();
+				//servers[new Integer(getServerIndexTxt().getText())].killServer();
+				String macAdd = (String) router.getIPTable().get("192.168.1."+getServerIndexTxt().getText());
+				Server serverToKill = (Server) router.getNodeTable().get(macAdd);
+				serverToKill.killServer();
 			}
 		});
 
 		JTabbedPane clientsPane = new JTabbedPane(JTabbedPane.TOP);
-		clientsPane.setBounds(0, 305, 334, 306);
+		clientsPane.setBounds(0, 277, 334, 306);
 		simSettingsFrame.getContentPane().add(clientsPane);
 
 		JPanel createClientPanel = new JPanel();
@@ -254,11 +257,11 @@ public class Simulation extends JFrame {
 				create100ClientsThread.start();
 			}
 		});
-		btnCreateClients.setBounds(119, 6, 153, 29);
+		btnCreateClients.setBounds(154, 6, 153, 29);
 		createClientPanel.add(btnCreateClients);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setBounds(6, 47, 301, 113);
+		scrollPane_1.setBounds(6, 72, 301, 154);
 		createClientPanel.add(scrollPane_1);
 		
 		globalClientConsole = new JTextArea();
@@ -266,31 +269,12 @@ public class Simulation extends JFrame {
 		scrollPane_1.setViewportView(globalClientConsole);
 		
 		JLabel lblCorrect = new JLabel("Correct Results");
-		lblCorrect.setBounds(130, 172, 96, 16);
+		lblCorrect.setBounds(6, 238, 96, 16);
 		createClientPanel.add(lblCorrect);
 		
 		lblCorrectResults = new JLabel("0");
-		lblCorrectResults.setBounds(238, 172, 61, 16);
+		lblCorrectResults.setBounds(114, 238, 38, 16);
 		createClientPanel.add(lblCorrectResults);
-		
-		JButton btnDebug = new JButton("Debug");
-		btnDebug.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				int loopCount = 0;
-				System.out.println(instantiatedClientCount);
-				
-				while(loopCount < instantiatedClientCount){
-					System.out.println("Current Message at Client: " + loopCount+ "" + clients[loopCount].getReceivedMsg());
-					
-					loopCount++;
-				}
-				
-			}
-		});
-		btnDebug.setBounds(1, 172, 117, 29);
-		createClientPanel.add(btnDebug);
 		
 		JButton btnStartClients = new JButton("Start Clients");
 		btnStartClients.addMouseListener(new MouseAdapter() {
@@ -306,8 +290,16 @@ public class Simulation extends JFrame {
 				
 			}
 		});
-		btnStartClients.setBounds(155, 204, 117, 29);
+		btnStartClients.setBounds(154, 35, 153, 29);
 		createClientPanel.add(btnStartClients);
+		
+		JLabel lblIncorrectResultsLabel = new JLabel("Incorrect Results");
+		lblIncorrectResultsLabel.setBounds(154, 238, 106, 16);
+		createClientPanel.add(lblIncorrectResultsLabel);
+		
+		lblIncorrectResults = new JLabel("0");
+		lblIncorrectResults.setBounds(272, 238, 41, 16);
+		createClientPanel.add(lblIncorrectResults);
 		btnCreateClient.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -538,14 +530,19 @@ public class Simulation extends JFrame {
 			Runnable startClients = new Runnable(){
 				
 				public void run(){
-					clients[startedClientCount].startSending("This is a test. This is a test. This is a test.");
+					//String msg = UUID.randomUUID().toString() + "a";
+					//String msg = "asdajskasjka sfyaksfhak shks dhaksjhdk asjh akshj aksjh jkhdgf ksdjhfg kajshf zjsdfgzksf";
+					SecureRandom random = new SecureRandom();
+					String msg = new BigInteger(130, random).toString(132);
+					msg = msg.replace("-", "");
+					clients[startedClientCount].startSending(msg);
 				}
 			};
 			
 			Thread startClientsThread = new Thread(startClients);
 			startClientsThread.start();
 			try{
-				Thread.sleep(25);
+				Thread.sleep(50);
 			}catch(Exception e){
 				
 			}
@@ -565,6 +562,12 @@ public class Simulation extends JFrame {
 			int numberOfCorrect = new Integer(getLblCorrectResults().getText());
 			numberOfCorrect++;
 			getLblCorrectResults().setText("" + numberOfCorrect);
+		}
+		
+		if(msg.startsWith("INCORRECT MESSAGE RECEIVED!!")){
+			int numberOfIncorrect = new Integer(getLblIncorrectResults().getText());
+			numberOfIncorrect++;
+			getLblIncorrectResults().setText("" + numberOfIncorrect);
 		}
 		
 		try{
@@ -630,5 +633,8 @@ public class Simulation extends JFrame {
 	}
 	public JLabel getLblCorrectResults() {
 		return lblCorrectResults;
+	}
+	public JLabel getLblIncorrectResults() {
+		return lblIncorrectResults;
 	}
 }

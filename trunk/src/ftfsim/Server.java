@@ -467,7 +467,7 @@ public class Server {
 					//loopCount++;
 					//		+ ip + " not detected as dead. Last shout heard at " + shoutsHeard.get(mac));
 				}
-				writeToDeathConsole("" + duplex);
+				//writeToDeathConsole("" + duplex);
 				loopCount++;
 			}
 
